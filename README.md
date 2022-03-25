@@ -6,7 +6,7 @@ Oracle Linux Automation Manager and Engine, based upon the open source AWX and A
 
 ## Getting Started
 
-- [Check the getting started documentation] (https://docs.oracle.com/en/operating-systems/oracle-linux/8/oracle-linux-automation-manager/).
+- [Check the getting started documentation](https://docs.oracle.com/en/operating-systems/oracle-linux/8/oracle-linux-automation-manager/).
 
 ## License
 
