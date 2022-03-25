@@ -10,6 +10,11 @@ This repository will contain example ansible playbook code.
 
 - [Check the getting started documentation](https://docs.oracle.com/en/operating-systems/oracle-linux/8/oracle-linux-automation-manager/).
 
+## Security
+
+Please consult the [security guide](./SECURITY.md) for our responsible security
+vulnerability disclosure process.
+
 ## License
 
 Copyright (c) 2021 Oracle and/or its affiliates.
