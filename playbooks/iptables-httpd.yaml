@@ -1,0 +1,32 @@
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2020,2021,2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# Description: Oracle Linux Automation Manager Ansible playbook to install & start HTTPD and configure an iptables based firewall
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# yamllint disable
+
+---
+- hosts: all
+  tasks:
+  - name: Install httpd packages 
+    yum:
+      name: httpd
+      state: present
+  - name: ensure httpd is running
+    service:
+      name: httpd 
+      state: started
+      enabled: true
+  - name: Insert a rule for port 80
+    ansible.builtin.iptables:
+      chain: INPUT
+      protocol: tcp
+      destination_port: 80
+      jump: ACCEPT
+      action: insert
