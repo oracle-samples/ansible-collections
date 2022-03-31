@@ -1,4 +1,9 @@
-# Oracle Linux Automation Manager
+# Ansible Code Example
+
+A collection of ansible playbooks/code examples that helps automating any kind of time consuming process or operation usually executed manually.
+Code examples are focused on automation for Oracle Linux with the option to leverage those with Oracle Linux Automation Manager and Oracle Linux Automation Engine.
+
+# What is Oracle Linux Automation Manager/Engine ?
 
 Oracle Linux Automation Manager and Oracle Linux Automation Engine are the latest additions to the Oracle Linux operating environment.
 Together, these new capabilities provide a cost effective, powerful, web-based automation engine with reporting, credentialed role-based access control, work flow automation, and job scheduling framework for Oracle Linux customers that need modern provisioning, deployment, configuration management, and task automation.
@@ -8,12 +13,18 @@ This repository will contain example ansible playbook code.
 
 ## Getting Started
 
-- [Check the getting started documentation](https://docs.oracle.com/en/operating-systems/oracle-linux/8/oracle-linux-automation-manager/).
+Clone this repository `git clone https://github.com/oracle/ansible-examples.git`
+
+- [Check the getting started OLAM documentation](https://docs.oracle.com/en/operating-systems/oracle-linux/8/oracle-linux-automation-manager/).
 
 ## Contributing
 
 This project welcomes contributions from the community. Before submitting a pull
 request, please [review our contribution guide](./CONTRIBUTING.md).
+
+## Help
+
+- Project Owner: Simon Coter ([@scoter-oracle](https://github.com/scoter-oracle))
 
 ## Security
 
