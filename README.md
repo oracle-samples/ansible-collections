@@ -1,6 +1,6 @@
-# Oracle Galaxy
+# Ansible Collections
 
-Oracle Galaxy is a collection of ansible playbooks/code examples that helps automating any kind of time consuming process or operation usually executed manually.
+Ansible Collections is a collection of ansible playbooks/code examples that helps automating any kind of time consuming process or operation usually executed manually.
 Code examples are focused on automation for Oracle Products with the option to leverage those with Oracle Linux Automation Manager and Oracle Linux Automation Engine.
 
 # What is Oracle Linux Automation Manager/Engine ?
@@ -13,7 +13,7 @@ This repository will contain example ansible playbook code.
 
 ## Getting Started
 
-Clone this repository `git clone https://github.com/oracle-samples/galaxy.git`
+Clone this repository `git clone https://github.com/oracle-samples/ansible-collections.git`
 
 - [Check the getting started OLAM documentation](https://docs.oracle.com/en/operating-systems/oracle-linux/8/oracle-linux-automation-manager/).
 
@@ -25,7 +25,7 @@ request, please [review our contribution guide](./CONTRIBUTING.md).
 ## Help
 
 - Project Owner: Simon Coter ([@scoter-oracle](https://github.com/scoter-oracle))
-- Project Admin: Simon Hayler ([@shayler-oracle](https://github.com/shayler-oracle))
+- Project Admin: Simon Hayler ([@simonhayler](https://github.com/simonhayler))
 
 ## Security
 
