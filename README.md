@@ -1,7 +1,7 @@
 # Ansible Collections
 
 Ansible Collections is a collection of ansible playbooks/code examples that helps automating any kind of time consuming process or operation usually executed manually.
-Code examples are focused on automation for Oracle Products with the option to leverage those with Oracle Linux Automation Manager and Oracle Linux Automation Engine.
+Code examples are mainly focused on automation for Oracle Products with the option to leverage those with Oracle Linux Automation Manager and Oracle Linux Automation Engine.
 
 # What is Oracle Linux Automation Manager/Engine ?
 
