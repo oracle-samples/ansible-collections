@@ -1,0 +1,35 @@
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# Description: Oracle Linux Automation Manager Ansible playbook to install AIDE
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# yamllint disable
+
+---
+- hosts: all
+  become: yes
+  tasks:
+  - name: Check if the aide database exists
+    stat:
+      path: /var/lib/aide/aide.db.gz
+    register: p
+  - name: Fail if aide database exists
+    fail:
+      msg: The aide database exists, therefore aide is installed, we need to exit
+    when: p.stat.exists
+  - name: Install aide package
+    yum:
+      name: aide
+      state: present
+  - name: Initialise aide
+    command: aide --init
+    register: command_output
+  - debug: var=command_output
+  - name: Enable Database for aide
+    command: mv /var/lib/aide/aide.db.new.gz /var/lib/aide/aide.db.gz

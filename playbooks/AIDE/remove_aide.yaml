@@ -1,0 +1,25 @@
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# Description: Oracle Linux Automation Manager Ansible playbook to install & start HTTPD and configure an iptables based firewall
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# yamllint disable
+
+---
+- hosts: all
+  become: yes
+  tasks:
+  - name: Remove aide package
+    yum:
+      name: aide
+      state: absent
+  - name: Clean up aide filesystem
+    file:
+      path: /var/lib/aide
+      state: absent
