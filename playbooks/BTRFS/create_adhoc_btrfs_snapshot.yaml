@@ -10,6 +10,7 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
 # yamllint disable
+
 ---
 - hosts: all
   become: yes
