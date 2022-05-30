@@ -1,0 +1,92 @@
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# Description: Oracle Linux Automation Manager Ansible playbook to create an adhoc BTRFS snapshot
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# yamllint disable
+---
+- hosts: all
+  become: yes
+
+  tasks:
+    - name: Gather uname output to determine if system is running Oracle Linux 8 UEK
+      command: uname -r
+      register: uname_contents
+
+    - name: Fail if system is not running Oracle Linux 8 UEK
+      fail:
+        msg: System is not running Oracle Linux 8 UEK, we need to exit
+      when: uname_contents.stdout.find('el8uek') == -1
+
+    - name: Gather btrfs output for the root filesystem to determine if system if running btrfs
+      command: stat -f --format="%T" /
+      register: btrfs_contents
+
+    - name: Fail if system is not using btrfs for the root filesystem
+      fail:
+        msg: System is not using btrfs for the root filesystem, we need to exit
+      when: btrfs_contents.stdout.find('btrfs') == -1
+
+    - name: Check and fail if /mnt is already mounted
+      shell: mountpoint /mnt
+      register: mount
+      ignore_errors: True
+
+    - name: Fail if /mnt is already mounted
+      fail:
+        msg: The /mnt filesystem, is already mounted we need to exit
+      when: mount.rc == 0
+
+    - name: Check that the /mnt filesystem exists, if not we will create it
+      file:
+        path: /mnt
+        state: directory
+        mode: '0755'
+
+    - name: Get the subvolume id for the root filesystem
+      shell: btrfs subvolume list / | awk 'NR == 1 {print $7}'
+      register: subvolid
+
+    - set_fact:
+        subvolid_string: "{{ subvolid.stdout }}"
+
+    - debug:
+        msg: "Current subvolume id for root = {{ subvolid_string }}"
+
+    - name: Get the disk device that is supporting the root filesystem
+      shell: df -hT | grep /$ | awk '{print $1}'
+      register: diskdevice
+
+    - set_fact:
+        diskdevice_string: "{{ diskdevice.stdout }}"
+
+    - debug:
+        msg: "Current disk device = {{ diskdevice_string }}"
+
+    - name: Mount the root filesystem on /mnt
+      shell: mount -o subvolid="{{ subvolid_string }}" "{{ diskdevice_string }}" /mnt
+      args:
+         warn: false # set warn=false to prevent warning
+      ignore_errors: True
+
+    - name: Check the /mnt/snapshots directory exists, if not we will create it
+      file:
+        path: /mnt/snapshots
+        state: directory
+        mode: '0755'
+
+    - name: Take a snapshot of the root filesystem with a date and time stamp
+      shell: |
+        cd /mnt
+        btrfs subvolume snapshot root snapshots/"{{ snapshot_name }}"
+
+    - name: Unmount /mnt
+      mount:
+        path: /mnt
+        state: unmounted
