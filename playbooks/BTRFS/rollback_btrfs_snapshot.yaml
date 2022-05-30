@@ -1,0 +1,47 @@
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# Description: Oracle Linux Automation Manager Ansible playbook to rollback / boot from a BTRFS snapshot
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# yamllint disable
+---
+- hosts: all
+  become: yes
+  
+  tasks:
+    - name: Gather uname output to determine if system is running Oracle Linux 8 UEK
+      command: uname -r
+      register: uname_contents
+
+    - name: Fail if system is not running Oracle Linux 8 UEK
+      fail:
+        msg: System is not running Oracle Linux 8 UEK, we need to exit
+      when: uname_contents.stdout.find('el8uek') == -1
+
+    - name: Gather btrfs output for the root filesystem to determine if system if running btrfs
+      command: stat -f --format="%T" /
+      register: btrfs_contents
+
+    - name: Fail if system is not using btrfs for the root filesystem
+      fail:
+        msg: System is not using btrfs for the root filesystem, we need to exit
+      when: btrfs_contents.stdout.find('btrfs') == -1
+
+    - name: Set the alternative root subvolume as default
+      command: btrfs subvolume set-default "{{ id }}" /
+      register: remount_command_output
+    - debug: var=remount_command_output
+
+    - name: Prepare to boot from the alternative root subvolume
+      shell: |
+        current_grub_kernel=$(sudo grubby --default-kernel);
+        grubby --remove-args="rootflags=subvol=root" --update-kernel $current_grub_kernel
+    
+    - name: reboot to apply alternative root snapshot
+      reboot:
