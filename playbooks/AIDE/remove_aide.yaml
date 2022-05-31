@@ -5,11 +5,10 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # https://oss.oracle.com/licenses/upl.
 #
-# Description: Oracle Linux Automation Manager Ansible playbook to install & start HTTPD and configure an iptables based firewall
+# Description: Playbook to install & start HTTPD and configure an iptables based firewall
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# yamllint disable
 
 ---
 - hosts: all
