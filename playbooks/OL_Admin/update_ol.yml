@@ -1,0 +1,54 @@
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# Description: Playbook to and Oracle Linux targeted host.
+#
+# Options:
+#   use_proxy: Allows the playbook to use a proxy if required.
+#   proxy: Set the proxy by replacing proxy_host with the FQDN of the proxy server, and proxy_port with the proxy server port.
+#   no_proxy: Set list of hosts to ignore proxy setting (comma delimited) by replacing no_proxy_list.
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+---
+- hosts: all
+  become: yes
+  vars:
+    use_proxy: no
+    proxy: '{{ proxy_host|default(omit) }}:{{ proxy_port|default(omit) }}'
+    proxy_env:
+      http_proxy: '{{ proxy }}'
+      https_proxy: '{{ proxy }}'
+      ftp_proxy: '{{ proxy }}'
+      no_proxy: '{{ no_proxy_list | default(omit) }}'
+
+  tasks:
+    - name: update all packages on all Oracle Linux 8 systems
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+      when: ansible_distribution == 'OracleLinux' and (ansible_facts['distribution_version'] is version('8', '>='))
+
+    - name: update all packages on all Oracle Linux 7 systems
+      ansible.builtin.yum:
+        name: "*"
+        state: latest
+      when: ansible_distribution == 'OracleLinux' and (ansible_distribution_version is version ('8', '<'))
+
+    - name: check if reboot required
+      command: /usr/bin/needs-restarting -r
+      register: reboot_required
+      ignore_errors: yes
+      changed_when: false
+      failed_when: reboot_required.rc == 2
+      when: ansible_distribution == 'OracleLinux'
+
+    - debug:
+        var: reboot_required
+
+    - name: reboot (if needed) to apply latest kernel and updates
+      reboot:
+      when: ansible_distribution == 'OracleLinux' and reboot_required.rc == 1
+
+  environment: "{{ proxy_env | default(omit) }}"

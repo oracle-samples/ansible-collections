@@ -1,0 +1,16 @@
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# Description: Playbook that prints a hello_world message.
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+---
+- name: hello world sample
+  hosts: all
+  tasks:
+    - name: print welcome message
+      debug:
+        msg: "Hello! Welcome to Oracle Linux Automation Manager."
+
