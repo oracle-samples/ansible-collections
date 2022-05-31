@@ -5,11 +5,10 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # https://oss.oracle.com/licenses/upl.
 #
-# Description: Oracle Linux Automation Manager Ansible playbook to rename a BTRFS snapshot
+# Description: Playbook to rename a BTRFS snapshot
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# yamllint disable
 
 ---
 - hosts: all
