@@ -1,0 +1,115 @@
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# Description: Playbook to install, confgiure & start VNC Server for OL7 and OL8
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+
+---
+- hosts: all
+  become: yes
+
+  tasks:
+    - name: Install the 'Server with GUI' package group on Oracle Linux 8 or higher
+      dnf:
+        name: "@Server with GUI"
+        state: present
+      when: ansible_distribution == 'OracleLinux' and (ansible_facts['distribution_version'] is version('8', '>='))
+
+    - name: Install the 'Server with GUI' package group on Oracle Linux 7 
+      yum:
+        name: "@^Server with GUI"
+        state: present
+      when: ansible_distribution == 'OracleLinux' and (ansible_facts['distribution_version'] is version('8', '<'))
+ 
+    - name: Install the vnc package for Oracle Linux 8 or higher
+      dnf:
+        name:
+          - tigervnc-server
+          - tigervnc-server-module
+        state: latest
+      when: ansible_distribution == 'OracleLinux' and (ansible_facts['distribution_version'] is version('8', '>='))
+
+    - name: Install the vnc package for Oracle Linux 7
+      yum:
+        name:
+          - tigervnc-server
+        state: latest
+      when: ansible_distribution == 'OracleLinux' and (ansible_facts['distribution_version'] is version('8', '<'))
+ 
+    - name: Configure firewalld for the VNC ports
+      firewalld:
+        service: vnc-server
+        permanent: yes
+        state: enabled
+
+    - name: Reload the firewall 
+      systemd:
+        name: firewalld
+        state: reloaded
+
+    - name: Copy systemd template OL8
+      copy:
+        src: /usr/lib/systemd/system/vncserver@.service
+        dest: /etc/systemd/system/vncserver@:{{ vnc_port }}.service
+        remote_src: yes
+      when: ansible_distribution == 'OracleLinux' and (ansible_facts['distribution_version'] is version('8', '>='))
+
+    - name: Copy systemd template OL7 including vnc port:{{ vnc_port }} and {{ vnc_geometry }}
+      template:
+        src: "{{ template_path }}/vncserver-service.j2"
+        dest: /etc/systemd/system/vncserver@:{{ vnc_port }}.service
+        owner: root
+        group: root
+        mode: '0644'
+      when: ansible_distribution == 'OracleLinux' and (ansible_facts['distribution_version'] is version('8', '<'))
+
+    - name: Assign {{ username }} to vnc port OL8
+      lineinfile:
+        path: /etc/tigervnc/vncserver.users
+        line: ":{{ vnc_port }}={{ username }}"
+      when: ansible_distribution == 'OracleLinux' and (ansible_facts['distribution_version'] is version('8', '>='))
+
+    - name: Set vnc geometry and sessions OL8
+      blockinfile:
+        path: /etc/tigervnc/vncserver-config-defaults
+        block: |
+          session=gnome
+          geometry={{ vnc_geometry }}
+      when: ansible_distribution == 'OracleLinux' and (ansible_facts['distribution_version'] is version('8', '>='))
+
+    - name: Create .vnc directory for user
+      file:
+        path: /home/{{ username }}/.vnc
+        state: directory
+        mode: 0700
+        owner: "{{ username }}"
+        group: "{{ username }}"
+
+    - name: Generate vnc password for the remote user
+      shell: |
+        set -o pipefail
+        echo {{ vnc_default_password }} | vncpasswd -f > /home/{{ username }}/.vnc/passwd
+      args:
+        chdir: "/home/{{ username }}/.vnc"
+        creates: "/home/{{ username }}/.vnc/passwd"
+        executable: /bin/bash
+
+    - name: Change the permission to 600 for .vnc/passwd file
+      file:
+        path: "/home/{{ username }}/.vnc/passwd"
+        owner: "{{ username }}"
+        group: "{{ usergroup }}"
+        mode: '0600'
+
+    - name: Start and enable the vnc service
+      systemd:
+        state: started
+        daemon_reload: yes
+        name: vncserver@:{{ vnc_port }}.service
+        enabled: true
