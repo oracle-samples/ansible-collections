@@ -9,6 +9,16 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
+# This playbook uses the following additional variables which should be configured at run time for the template, these are examples values used
+# in the lab:
+# vnc_port: 1
+# template_path: /var/lib/awx/projects/templates
+# username: olam
+# usergroup: olam
+# vnc_default_password: Welcome1
+# vnc_geometry: 1280x1024
+# 
+# Also, a template file is needed which exists in the templates directory 
 
 ---
 - hosts: all
