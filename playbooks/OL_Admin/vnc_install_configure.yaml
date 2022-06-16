@@ -19,6 +19,7 @@
 # vnc_geometry: 1280x1024
 # 
 # Also, a template file is needed which exists in the templates directory which is linked here: templates/vncserver-service.j2
+# Within the lab OLAM server I placed this file in: /var/lib/awx/projects/templates with awx:awx permissions for both file and directory
 
 ---
 - hosts: all
