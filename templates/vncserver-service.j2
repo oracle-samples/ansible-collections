@@ -1,0 +1,18 @@
+[Unit]
+Description=Remote desktop service (VNC)
+After=syslog.target network.target
+
+[Service]
+Type=forking
+WorkingDirectory=/home/{{ username }}
+User={{ username }}
+Group={{ username }}
+
+# Clean any existing files in /tmp/.X11-unix environment
+ExecStartPre=/bin/sh -c '/usr/bin/vncserver -kill %i > /dev/null 2>&1 || :'
+ExecStart=/usr/bin/vncserver %i -geometry {{ vnc_geometry }}
+PIDFile=/home/{{ username }}/.vnc/%H%i.pid
+ExecStop=/usr/bin/vncserver -kill %i
+
+[Install]
+WantedBy=multi-user.target
