@@ -1,24 +1,35 @@
+#
+# Oracle Linux Automation Manager
+#
 # Copyright (c) 2022 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # https://oss.oracle.com/licenses/upl.
 #
 # Description: Playbook to add a user with password to the targeted host.
 #
-# Options:
-#   enable_sudo: Adds the new user to the wheel group to allow sudo access.
-#   enable_passwordless_sudo: Adds file to /etc/sudoers.d allowing passwordless sudo access.
-#
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# This playbook uses the following additional variables which should be configured at run time,
+#
+# username: name of the user to create [oracle]
+# user_default_password: password to assign to the new user [oracle]
+# enable_sudo: [true|false]
+# enable_passwordless_sudo: [true|false]
+# ssh_keyfile: location of public key file on Oracle Linux Automation Manager server [~/.ssh/key.pub]
+# ssh_keyurl: url containing public key file [http://github.com/username.keys]
+#
 
 ---
 - hosts: all
-  becomes: yes
+  become: yes
 
   vars:
-    username: oracle
-    user_default_password: oracle
-    enable_sudo: false
-    enable_passwordless_sudo: false
+    username:
+    user_default_password:
+    enable_sudo:
+    enable_passwordless_sudo:
+    ssh_keyfile:
+    ssh_keyurl:
 
   tasks:
 
@@ -27,15 +38,28 @@
         name: "{{ username }}"
         password: "{{ user_default_password | password_hash('sha512') }}"
         comment: Ansible created user
-        groups: wheel
-        append: yes
         update_password: on_create
+
+    - name: add user to wheel group for sudo access
+      user:
+        name: "{{ username }}"
+        group: wheel
+        append: yes
+      when: enable_sudo|default(false)|bool == true
 
     - name: set authorized key for user using local pubilc key file
       authorized_key:
         user: "{{ username }}"
         state: present
-        key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/{{ ssh_keyfile }}') }}"
+        key: "{{ lookup('file', '{{ ssh_keyfile }}') }}"
+      when: ssh_keyfile is defined and ssh_keyfile
+
+    - name: set authorized key for user using local pubilc key file
+      authorized_key:
+        user: "{{ username }}"
+        state: present
+        key: "{{ ssh_keyurl }}"
+      when: ssh_keyurl is defined and (ssh_keyurl|length > 0)
 
     - name: set user with passwordless sudo access
       lineinfile:
@@ -44,4 +68,6 @@
         line: '{{ username }} ALL=(ALL:ALL) NOPASSWD: ALL'
         state: present
         create: yes
+      when: enable_passwordless_sudo|default(false)|bool == true
+
 
