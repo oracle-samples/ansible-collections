@@ -1,0 +1,29 @@
+---
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# Description: Playbook to list a compartment within OCI
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# This playbook uses the following additional variables which should be configured at run time for the template, these are examples values used
+# in the lab:
+# instance_compartment: ocid1.compartment.oc1..aaaaaaaazxd6wrvcuicrgbi6cbaob4pyrr3i7i33xudheqhx6pbcesobdazq
+
+- name: List Compartment Details
+  collections:
+    - oracle.oci
+  connection: local
+  hosts: localhost
+  tasks:
+    - name: Get a specific compartment
+      oci_identity_compartment_facts:
+        compartment_id: "{{ instance_compartment }}"
+      register: output
+    - name: Print compartment details
+      debug:
+        msg: "{{ output }}"
