@@ -1,0 +1,214 @@
+---
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# Description: Playbook to create an OL Instance within OCI
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# This playbook uses the following additional variables which should be configured at run time for the template, these are examples values used
+# in the lab:
+# rescue_test: false
+# instance_shape: VM.Standard2.1
+# instance_hostname: OLAMinstance
+# instance_image: ocid1.image.oc1.iad.aaaaaaaanxbmz7rm7tkopukbbahtcbcx45v5omusafwhjaenzf7tkcoq56qa
+# instance_ad: ergw:US-ASHBURN-AD-1
+# instance_compartment: ocid1.compartment.oc1..aaaaaaaazxd6wrvcuicrgbi6cbaob4pyrr3i7i33xudheqhx6pbcesobdazq
+# 
+# Also, two template files are needed which exist in the templates directory, these are to enable the ingress and egress configuration for the OCI security list
+# Within the lab OLAM server I placed these files in: /var/lib/awx/projects/templates with awx:awx permissions for both file and directory.
+# These files are: egress_security_rules.yaml.j2 & ingress_security_rules.yaml.j2
+# An ssh directory is also needed with the public key which you should have the matching private one in order to connect to the instance as user opc
+
+- name: Launch a compute instance
+  hosts: localhost
+  collections:
+    - oracle.oci
+  vars:
+    # common networking definitions
+    quad_zero_route: "0.0.0.0/0"
+    TCP_protocol: "6"
+    SSH_port: "22"
+
+    vcn_name: "OLAM-vcn"
+    vcn_cidr_block: "10.0.0.0/16"
+    vcn_dns_label: "OLAMlcs"
+
+    ig_name: "OLAMinternetgateway"
+
+    route_table_name: "OLAMroutetable"
+    # route all internet access to our Internet Gateway
+    route_table_rules:
+      - cidr_block: "{{ quad_zero_route }}"
+        network_entity_id: "{{ ig_id }}"
+
+
+    subnet_cidr: "10.0.0.48/28"
+    subnet_name: "OLAMsubnet"
+    subnet_dns_label: "OLAMsubnet"
+    securitylist_name: "OLAMsecuritylist"
+    
+  tasks:
+    - block:
+        - set_fact:
+            SSH_AUTHORIZED_KEYS: "{{ lookup('file', './ssh/oci_id_rsa.pub') }}"
+            
+        - name: Create a VCN
+          oci_network_vcn:
+            compartment_id: "{{ instance_compartment }}"
+            display_name: "{{ vcn_name }}"
+            cidr_block: "{{ vcn_cidr_block }}"
+            dns_label: "{{ vcn_dns_label }}"
+          register: result
+        - set_fact:
+            vcn_id: "{{ result.vcn.id }}"
+
+        - name: Create a new Internet Gateway
+          oci_network_internet_gateway:
+            compartment_id: "{{ instance_compartment }}"
+            vcn_id: "{{ vcn_id }}"
+            name: "{{ ig_name }}"
+            is_enabled: 'yes'
+            state: 'present'
+          register: result
+        - set_fact:
+             ig_id: "{{ result.internet_gateway.id }}"
+
+        - name: Create route table to connect internet gateway to the VCN
+          oci_network_route_table:
+            compartment_id: "{{ instance_compartment }}"
+            vcn_id: "{{ vcn_id }}"
+            name: "{{ route_table_name }}"
+            route_rules: "{{ route_table_rules }}"
+            state: 'present'
+          register: result
+        - set_fact:
+            rt_id: "{{ result.route_table.id }}"
+            
+        - name: create ingress rules yaml body
+          template: src=./templates/ingress_security_rules.yaml.j2 dest=/tmp/instance_ingress_security_rules.yaml
+  
+        - name: create egress yaml body
+          template: src=./templates/egress_security_rules.yaml.j2 dest=/tmp/instance_egress_security_rules.yaml
+    
+        - name: load the variables defined in the ingress rules yaml body
+          include_vars:
+             file: /tmp/instance_ingress_security_rules.yaml
+             name: loaded_ingress
+             
+        - name: print loaded_ingress
+          debug:
+            msg: "loaded ingress is {{loaded_ingress}}"
+            
+        - name: load the variables defined in the egress rules yaml body
+          include_vars:
+            file: /tmp/instance_egress_security_rules.yaml
+            name: loaded_egress
+            
+        - name: print loaded_egress
+          debug:
+            msg: "loaded egress is {{loaded_egress}}"
+            
+        - name: Create a security list for allowing access to public instance
+          oci_network_security_list:
+            name: "{{ securitylist_name }}"
+            compartment_id: "{{ instance_compartment }}"
+            vcn_id: '{{ vcn_id }}'
+            ingress_security_rules: "{{ loaded_ingress.instance_ingress_security_rules }}"
+            egress_security_rules:  "{{ loaded_egress.instance_egress_security_rules }}"
+          register: result
+        - set_fact:
+            instance_security_list_ocid: "{{ result.security_list.id }}"
+
+        - name: Create a subnet to host the public instance. Link security_list and route_table.
+          oci_network_subnet:
+            availability_domain: "{{ instance_ad }}"
+            cidr_block: "{{ subnet_cidr }}"
+            compartment_id: "{{ instance_compartment }}"
+            display_name: "{{ subnet_name }}"
+            prohibit_public_ip_on_vnic: false
+            route_table_id: "{{ rt_id }}"
+            security_list_ids: [ "{{ instance_security_list_ocid }}" ]
+            vcn_id: '{{ vcn_id }}'
+            dns_label: "{{ subnet_dns_label }}"
+          register: result
+        - set_fact:
+            instance_subnet_id: "{{ result.subnet.id }}"
+        
+        - name: Launch an instance 
+          oci_compute_instance:
+            availability_domain: "{{ instance_ad }}"
+            compartment_id: "{{ instance_compartment }}"
+            name: "{{ instance_hostname }}"
+            image_id: "{{ instance_image }}"
+            shape: "{{ instance_shape }}"
+            create_vnic_details:
+                assign_public_ip: true
+                hostname_label: "{{ instance_hostname }}"
+                subnet_id: "{{ instance_subnet_id }}"
+            metadata:
+              ssh_authorized_keys: "{{ SSH_AUTHORIZED_KEYS }}"
+          register: result
+
+        - name: Print instance details
+          debug:
+            msg: "Launched a new instance {{ result }}"
+        - set_fact:
+            instance_id: "{{result.instance.id }}"
+
+        - name: Get the VNIC attachment details of instance
+          oci_compute_vnic_attachment_facts:
+            compartment_id: "{{ instance_compartment }}"
+            instance_id: "{{ instance_id }}"
+          register: result
+
+        - name: Get details of the VNIC
+          oci_network_vnic_facts:
+            id: "{{ result.vnic_attachments[0].vnic_id }}"
+          register: result
+        - set_fact:
+            instance_public_ip: "{{result.vnic.public_ip}}"
+
+        - name: Print the public ip of the newly launched instance
+          debug:
+            msg: "Public IP of launched instance {{ instance_public_ip }}, connect as user opc with the uploaded public key"
+            
+        - name: Fail task when variable rescue_test is set to true (for testing the rescue section)
+          fail:
+            msg: "Rescue debug is enabled, we will fail to test the rescue steps"
+          when: "( rescue_test )"
+            
+      rescue:
+        - name: Terminate the instance
+          oci_compute_instance:
+            id: "{{ instance_id }}"
+            state: absent
+
+        - name: Delete the subnet
+          oci_network_subnet:
+            id: "{{ instance_subnet_id }}"
+            state: absent
+
+        - name: Delete the security list
+          oci_network_security_list:
+            id: "{{ instance_security_list_ocid }}"
+            state: absent
+
+        - name: Delete the route table
+          oci_network_route_table:
+            id: "{{ rt_id }}"
+            state: absent
+
+        - name: Delete the Internet Gateway
+          oci_network_internet_gateway:
+            id: "{{ ig_id }}"
+            state: absent
+
+        - name: Delete the VCN
+          oci_network_vcn:
+            vcn_id: "{{ vcn_id }}"
+            state: absent
