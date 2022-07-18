@@ -1,0 +1,49 @@
+---
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# Description: Playbook to list VM's by Oracle Linux Virtualization Manager (OLVM) cluster
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# This playbook uses the following additional variables which should be configured at run time for the template, these are examples values used
+# in the lab:
+# olvm_cluster: cluster*
+# olvm_name: ocne*
+# Also, a password file is needed which contains the passwords for the local OLVM Manager as well as the root user for the VM.
+# The password file is encrypted using the ansible-vault command. Once encrypted I created a Vault credential using this file.
+# The template for OLAM needs the Vault credential as well as the local user credential.
+# Within the lab OLAM server I placed the file in: /var/lib/awx/projects/files with awx:awx permissions for both file and directory.
+# The files is declared below in the vars_files reference.
+# The vars section contains the OLVM FQDN and user which should be edited to support your local environment.
+
+
+- hosts: all
+  become: yes
+  vars_files:
+    - /var/lib/awx/projects/files/ovirt_passwords.yaml
+  
+  vars:
+    olvm_fqdn: ovirt.it.oracle.com
+    olvm_user: shayler@internal
+    olvm_cafile: /etc/pki/ovirt-engine/ca.pem
+
+  tasks:
+    - name: List OLVM VM's {{ olvm_name }} by Cluster {{ olvm_cluster }}
+      ovirt_vm_info:
+        auth:
+          hostname: "{{ olvm_fqdn }}"
+          username: "{{ olvm_user }}"
+          password: "{{ olvm_password }}"
+          ca_file: "{{ olvm_cafile | default(omit) }}"
+          insecure: "{{ olvm_insecure | default(true) }}"
+        pattern: name="{{ olvm_name }}" and cluster="{{ olvm_cluster }}"
+      register: result
+
+    - name: Print out {{ olvm_name }} VM information
+      debug:
+        msg: "{{ result.ovirt_vms }}"
