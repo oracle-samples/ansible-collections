@@ -1,0 +1,32 @@
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Description: Ansible playbook to setup and start OCNE API Server.
+#
+# yamllint disable
+
+---
+
+- name: Start API Server
+  hosts: ocne_op
+  gather_facts: false
+  become: yes
+  become_method: sudo
+
+  tasks:
+
+  - name: Start OCNE API Server with Certificate
+    become: yes
+    shell: |
+           /etc/olcne/bootstrap-olcne.sh \
+             --secret-manager-type file \
+             --olcne-node-cert-path /etc/olcne/configs/certificates/production/node.cert \
+             --olcne-ca-path /etc/olcne/configs/certificates/production/ca.cert \
+             --olcne-node-key-path /etc/olcne/configs/certificates/production/node.key \
+             --olcne-component api-server

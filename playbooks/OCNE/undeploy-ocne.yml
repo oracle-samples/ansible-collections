@@ -1,0 +1,62 @@
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Description:
+#
+# This is the Playbook file to undeploy the deployment of OCNE
+#   - use uninstall-ocne.yml file to uninstall the RPMs
+
+---
+
+- name: Remove OCNE modules, Kubernetes and OCNE environment
+  hosts: ocne_op
+  gather_facts: false
+
+  tasks:
+
+  - name: Remove OLM Module
+    command: olcnectl module uninstall \
+             --environment-name {{ ocne_environment }} \
+             --name {{ ocne_olm }}
+    ignore_errors: yes
+
+  - name: Remove Istio Module
+    command: olcnectl module uninstall
+             --environment-name {{ ocne_environment}}
+             --name {{  ocne_istio }}
+    ignore_errors: yes
+
+  - name: Remove MetalLB Module
+    command: olcnectl module uninstall \
+             --environment-name {{ ocne_environment }} \
+             --name {{ ocne_metallb }}
+    ignore_errors: yes
+
+  - name: Remove OCI-CCM Module
+    command: olcnectl module uninstall \
+             --environment-name {{ ocne_environment }} \
+             --name {{ ocne_oci }}
+    ignore_errors: yes
+
+  - name: Remove Helm Module
+    command: olcnectl module uninstall
+             --environment-name {{ ocne_environment }}
+             --name {{ ocne_helm }}
+    ignore_errors: yes
+
+  - name: Remove Kubernetes Module/Cluster
+    command: olcnectl module uninstall
+             --environment-name {{ ocne_environment }}
+             --name {{ ocne_k8s }}
+    ignore_errors: yes
+
+  - name: Remove the OCNE environment
+    command: olcnectl environment delete
+             --environment-name {{ ocne_environment }}
+    ignore_errors: yes

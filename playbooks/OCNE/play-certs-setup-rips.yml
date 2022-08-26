@@ -1,0 +1,31 @@
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Description: Ansible playbook to setup certificates
+# for externalip restrict webhook kubernetes service.
+#
+# yamllint disable
+
+---
+
+- name: Set up OCNE Certificates
+  hosts: ocne_op
+  gather_facts: false
+  become: yes
+  become_method: sudo
+
+  tasks:
+
+  - name: Create X.509 Certificates for restricted external IPs webhook
+    shell: |
+           cd /etc/olcne
+           ./gen-certs-helper.sh --cert-dir /etc/olcne/configs/certificates/restrict_external_ip --cert-request-organization-unit "OCNE" --cert-request-organization "Oracle" --nodes externalip-validation-webhook-service.externalip-validation-system.svc,externalip-validation-webhook-service.externalip-validation-system.svc.cluster.local --one-cert
+           chmod 555 /etc/olcne/configs/certificates/restrict_external_ip/production/node.key
+    when:
+      - restricted_ips == true

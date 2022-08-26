@@ -1,0 +1,74 @@
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Description: Ansible playbook to create, validate
+# and install the OCNE kubernetes module.
+#
+# yamllint disable
+
+---
+
+- name: Deploy a Kubernetes Module (HA)
+  hosts: ocne_op
+  gather_facts: false
+
+  tasks:
+
+# For creating a single control plane node cluster. This type of cluster is not 
+# recommended. A HA cluster can be created with a single control plane node. 
+# This allows for adding more control plane nodes if required.
+#
+  - name: Create a Kubernetes Module (non HA)
+    command: olcnectl module create \
+           --environment-name {{ ocne_environment }} \
+           --module kubernetes \
+           --name {{ ocne_k8s }} \
+           --container-registry {{ container_registry }} \
+           --master-nodes {{ control_nodes }} \
+           --worker-nodes {{ worker_nodes }} \
+           --selinux enforcing \
+           --restrict-service-externalip-ca-cert=/etc/olcne/configs/certificates/restrict_external_ip/production/ca.cert \
+           --restrict-service-externalip-tls-cert=/etc/olcne/configs/certificates/restrict_external_ip/production/node.cert \
+           --restrict-service-externalip-tls-key=/etc/olcne/configs/certificates/restrict_external_ip/production/node.key
+    when:
+      - ha == false
+      - restricted_ips == true
+
+# Future use for nginx image with mirrored registry
+## --nginx-image {{ nginx_image | default('container-registry.oracle.com/olcne/nginx:1.17.7') }}
+###
+
+  - name: Create a Kubernetes Module (HA) with OLCNE-NGINX
+    command: olcnectl module create \
+           --environment-name {{ ocne_environment }} \
+           --module kubernetes \
+           --name {{ ocne_k8s }} \
+           --master-nodes {{ control_nodes }} \
+           --worker-nodes {{ worker_nodes }} \
+           --container-registry {{ container_registry }} \
+           --virtual-ip {{ virtual_ip }} \
+           --selinux enforcing \
+           --restrict-service-externalip true \
+           --restrict-service-externalip-ca-cert=/etc/olcne/configs/certificates/restrict_external_ip/production/ca.cert \
+           --restrict-service-externalip-tls-cert=/etc/olcne/configs/certificates/restrict_external_ip/production/node.cert \
+           --restrict-service-externalip-tls-key=/etc/olcne/configs/certificates/restrict_external_ip/production/node.key
+    when:
+      - ha == true
+      - restricted_ips == true
+
+  - name: Validate the Environment
+    command: olcnectl module validate \
+        --environment-name {{ ocne_environment }} --name {{ ocne_k8s }}
+
+  - name: Deploy the Environment
+    command: olcnectl module install \
+        --environment-name {{ ocne_environment }} --name {{ ocne_k8s }}
+    register: deploy_kube
+    until: deploy_kube is not failed
+    retries: 3

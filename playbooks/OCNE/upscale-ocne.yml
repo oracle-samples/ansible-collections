@@ -1,0 +1,45 @@
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Description:
+#
+# This is the Playbook file to upsvale OCNE with additional kubernets hosts
+#   - edit the hosts.ini file to configure the additional nodes for the cluster
+#   - edit the group_vars/all.yml to configure variables for your environment
+
+---
+
+- name: Import Pre requisites playbook
+  ansible.builtin.import_playbook: play-prerequisites.yml
+  vars:
+    hostlist: "ocne_new_kube_worker ocne_new_kube_control"
+
+- name: Import Kube playbook
+  ansible.builtin.import_playbook: play-k8snodes.yml
+  vars:
+    hostlist: "ocne_new_kube_control ocne_new_kube_worker"
+
+- name: Import Nginx playbook
+  ansible.builtin.import_playbook: play-nginxmlb.yml
+  vars:
+    hostlist: "ocne_new_kube_control"
+
+- import_playbook: play-certs-scale.yml
+
+- name: Import Agent start playbook
+  ansible.builtin.import_playbook: play-agent-start.yml
+  vars:
+    hostlist: "ocne_new_kube_control ocne_new_kube_worker"
+
+- import_playbook: play-mod-kube-add.yml
+
+- name: Import Kubectl setup playbook
+  ansible.builtin.import_playbook: play-kubectl.yml
+  vars:
+    hostlist: ocne_new_kube_control
