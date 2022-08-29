@@ -1,0 +1,73 @@
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Description: Ansible playbook to create
+# and install the OCNE MetalLB modules.
+#
+# yamllint disable
+
+---
+
+- name: Setting the MetalLB Network Ports
+  hosts: ocne_kube_worker ocne_new_kube_worker
+  become: yes
+  gather_facts: false
+
+  tasks:
+
+  - name: Open Port 7946 TCP
+    firewalld:
+      port: 7946/tcp
+      permanent: yes
+      state: enabled
+
+  - name: Open Port 7946 UDP
+    firewalld:
+      port: 7946/udp
+      permanent: yes
+      state: enabled
+
+  - name: Restart firewalld
+    service:
+      name: firewalld
+      state: restarted
+      enabled: yes
+
+- name: Create and Deploy an MetalLB Module
+  hosts: ocne_op
+  gather_facts: false
+
+  tasks:
+
+  - name: Copy the MetalLB configuration file
+    copy:
+      src: "{{ playbook_dir }}/files/metallb-config.yaml"
+      dest: "/tmp/metallb-config.yaml"
+      mode: 0644
+
+  - name: Create a MetalLB Module
+    command: olcnectl module create \
+           --environment-name {{ ocne_environment }} \
+           --module metallb \
+           --name {{ ocne_metallb }} \
+           --metallb-helm-module {{ ocne_helm }} \
+           --metallb-config /tmp/metallb-config.yaml
+
+  - name: Validate the MetalLB Module
+    command: olcnectl module validate \
+            --environment-name {{ ocne_environment }} \
+            --name {{ ocne_metallb }} 
+
+  - name: Deploy the MetalLB Module
+    command: olcnectl module install \
+        --environment-name {{ ocne_environment }} \
+        --name {{ ocne_metallb }}
+    register: deploy_metallb
+    until: deploy_metallb is not failed
+    retries: 3

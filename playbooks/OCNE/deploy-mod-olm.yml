@@ -1,0 +1,38 @@
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Description: Ansible playbook to create
+# and install OCNE Operator Lifecyle Manager modules.
+#
+# yamllint disable
+
+---
+
+- name: Create and Deploy a Helm and OLM Module
+  hosts: ocne_op
+  gather_facts: false
+
+  tasks:
+
+  - name: Create an OLM Module
+    command: olcnectl module create \
+            --environment-name {{ ocne_environment }} \
+            --module operator-lifecycle-manager \
+            --name {{ ocne_olm }} \
+            --olm-helm-module {{ ocne_helm }}
+    when:
+    - ocne_olm != ""
+    - ocne_helm != ""
+
+  - name: Deploy the OLM Module
+    command: olcnectl module install \
+           --environment-name {{  ocne_environment}} \
+           --name {{ ocne_olm }}
+    when:
+    - ocne_olm != ""

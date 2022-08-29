@@ -1,0 +1,26 @@
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Description: Ansible playbook clean up any previous kubernetes cluster setup.
+#
+# yamllint disable
+
+---
+
+- name: Clean up Cluster from Kubernetes Nodes
+  hosts: ocne_kube_worker ocne_kube_control
+  gather_facts: false
+  become: yes
+  become_method: sudo
+
+  tasks:
+
+  - name: Run kubeadm reset
+    command: kubeadm reset -f
+    ignore_errors: yes

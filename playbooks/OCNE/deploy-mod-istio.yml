@@ -1,0 +1,41 @@
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Description: Ansible playbook to create
+# and install the OCNE Istio module.
+#
+# yamllint disable
+
+---
+
+- name: Create and Deploy an Istio Module
+  hosts: ocne_op
+  gather_facts: false
+
+  tasks:
+
+  - name: Create a Istio Module (includes Prometheus and Grafana)
+    command: olcnectl module create \
+           --environment-name {{ ocne_environment }} \
+           --module istio \
+           --name {{ ocne_istio }} \
+           --istio-helm-module {{ ocne_helm }}
+
+  - name: Validate the Istio Module
+    command: olcnectl module validate \
+            --environment-name {{ ocne_environment }} \
+            --name {{ ocne_istio }} 
+
+  - name: Deploy the Istio Module
+    command: olcnectl module install \
+        --environment-name {{ ocne_environment }} \
+        --name {{ ocne_istio }}
+    register: deploy_istio
+    until: deploy_istio is not failed
+    retries: 3

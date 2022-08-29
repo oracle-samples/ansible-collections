@@ -1,0 +1,31 @@
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Description:
+#
+
+---
+
+- name: Set up kubectl on the Master Node
+  hosts: "{{hostlist}}"
+  gather_facts: false
+
+  tasks:
+
+  - name: Waiting for setup to complete
+    pause:
+        minutes: 1
+
+  - name: Set up kubectl
+    shell: |
+            rm $HOME/.kube/config
+            mkdir -p $HOME/.kube
+            sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+            sudo chown $(id -u):$(id -g) $HOME/.kube/config
+            echo 'export KUBECONFIG=$HOME/.kube/config' >> $HOME/.bashrc

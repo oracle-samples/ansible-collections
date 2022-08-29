@@ -1,0 +1,28 @@
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Description:
+#
+# This is the Playbook file to downscale OCNE cluster
+
+---
+
+- name: Remove Master and Worker Nodes from the Cluster
+  hosts: ocne_op
+  gather_facts: false
+
+  tasks:
+
+  - name: Remove master and worker nodes from a Kubernetes module
+    command: olcnectl module update \
+           --environment-name {{ ocne_environment }} \
+           --name {{ ocne_k8s }} \
+           --master-nodes {{ control_nodes }} \
+           --worker-nodes {{ worker_nodes }} \
+           --force
