@@ -1,0 +1,78 @@
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Description: Ansible playbook to deploy the offline uptrack client
+#
+# yamllint disable
+---
+
+- name: Deploy Ksplice uptrack offline client
+  hosts: all
+  become: yes
+  become_method: sudo
+  gather_facts: yes
+
+  vars:
+    ol_version: "{{ ansible_facts['distribution_major_version'] }}"
+    baseurl_ksplice: "http://localyum.example.com/repo/ol{{ ol_version }}_x86_64_ksplice"
+    install_on_reboot: "yes"
+    upgrade_on_reboot: "yes"
+    skip_apply_after_pkg_install: "false"
+
+  tasks:
+
+  - name: Create repo file for local ksplice repository
+    yum_repository:
+      file: "local-ksplice-ol{{ ol_version }}"
+      name: "ol{{ ol_version }}_local_ksplice"
+      description: Ksplice for Oracle Linux $releasever ($basearch)
+      baseurl: "{{ baseurl_ksplice }}"
+      gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY"
+      gpgcheck: yes
+      enabled: yes
+
+  - name: Make sure ksplice online packages are removed
+    package: name=ksplice-tools,uptrack state=absent
+
+  - name: Install ksplice uptrack offline package
+    package: name=uptrack-offline state=present
+
+  - name: Adjust install_on_reboot in uptrack.conf configuration file
+    ini_file:
+      dest: /etc/uptrack/uptrack.conf
+      section: Settings
+      option: install_on_reboot
+      value: "{{ install_on_reboot }}"
+
+  - name: Adjust upgrade_on_reboot in uptrack.conf configuration file
+    ini_file:
+      dest: /etc/uptrack/uptrack.conf
+      section: Settings
+      option: upgrade_on_reboot
+      value: "{{ upgrade_on_reboot }}"
+
+  - name: Adjust skip_apply_after_pkg_install in uptrack.conf configuration file
+    ini_file:
+      dest: /etc/uptrack/uptrack.conf
+      section: Settings
+      option: skip_apply_after_pkg_install
+      value: "{{ skip_apply_after_pkg_install }}"
+
+  - name: Create daily cronjob to download uptrack-updates
+    copy:
+      dest: "/etc/cron.daily/uptrack-updates"
+      mode: 0755
+      content: |
+        #!/bin/sh
+        yum -y install uptrack-updates-`uname -r`
+        exit 0
+
+  - name: Check for latest uptrack updates
+    shell: /bin/sh /etc/cron.daily/uptrack-updates
+  
