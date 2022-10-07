@@ -23,11 +23,11 @@ my_no_proxy:
 
 # Container registry path to get the OCNE component container images 
 # !!!Required!!!
-container_registry: container-registry-ams.oracle.com/olcne
+container_registry: container-registry-lhr.oracle.com/olcne
 
 # Set to deploy as HA, always set to true to easily scale from single 
 # to HA
-ha: true
+ha: false
 
 # The virtual IP for an olcne-nginx load balancer, replace with your
 # virtual IP address.
@@ -71,9 +71,9 @@ ocne_metallb: mymetallb
 control_nodes: ocnecontrol01.example.com:8090
 worker_nodes: ocneworker01.example.com:8090,ocneworker02.example.com:8090
 
-# Define all kubernetes nodes in the cluster
+# Define all OCNE nodes in the cluster
 #     - should be <fqdn>
-all_nodes: ocnecontrol01.example.com,ocneworker01.example.com,ocneworker02.example.com
+all_nodes: ocneoperator.example.com,ocnecontrol01.example.com,ocneworker01.example.com,ocneworker02.example.com
 
 # Upscale only: nodes to add into an existing cluster.
 # add_nodes lists the nodes for certificate generation
