@@ -1,0 +1,692 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <!-- Template date: October 15, 2018 -->
+        <meta name="jarvis_url" content="/en/operating-systems/oracle-linux/8/obe-template"/>
+        <meta name="part_number" content="Fnnnnn_01"/>
+        <meta name="jarvis_pub_guid" content="OL8-OBE-TEMPLATE"/>
+        <meta name="jarvis_metadata_language" content="en"/>
+        <meta name="jarvis_metadata_category" content="operating-systems"/>
+        <meta name="jarvis_metadata_suite" content="linux"/>
+        <meta name="jarvis_metadata_product_group" content="not-applicable"/>
+        <meta name="jarvis_metadata_product" content="oracle-linux"/>
+        <meta name="jarvis_metadata_release" content="8"/>
+        <meta name="jarvis_metadata_pubalias" content="obe-template"/>
+
+        <!-- Put the content ID of this OBE between the empty quotation marks for 'content' below -->
+        <meta name="contentid" content="" />
+        <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+        <!-- The title below is displayed on the browser tab, in search results, and in  history. It can be longer than the tutorial title in the <h1> element, below.-->
+        <!-- Use an imperative verb in the title. -->
+        <title>Ansible Collection for Oracle Linux Automation Manager</title>
+
+        <meta name="robots" content="INDEX, FOLLOW" />
+        <meta name="description" content="Learn with our example playbooks and templates for useful administration procedures." />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" href="https://docs.oracle.com/en/operating-systems/oracle-linux/obe-style-js/css/normalize.min.css"/>
+        <link rel="stylesheet" href="https://docs.oracle.com/en/operating-systems/oracle-linux/obe-style-js/css/font-awesome.min.css" />
+        <link rel="stylesheet" href="https://docs.oracle.com/en/operating-systems/oracle-linux/obe-style-js/css/obe-lite.css" />
+        <link rel="stylesheet" href="https://docs.oracle.com/en/operating-systems/oracle-linux/obe-style-js/css/obe-linux.css" />
+        <script src="https://docs.oracle.com/en/operating-systems/oracle-linux/obe-style-js/js/jquery-1.11.0.min.js"></script>
+        <script src="https://docs.oracle.com/en/operating-systems/oracle-linux/obe-style-js/js/jquery-ui-1.10.4.custom.js"></script>
+        <script src="https://docs.oracle.com/en/operating-systems/oracle-linux/obe-style-js/js/jquery.tocify.jd.js"></script>
+        <script src="https://docs.oracle.com/en/operating-systems/oracle-linux/obe-style-js/js/leftnav.js"></script>
+    </head>
+    <body>
+        <header>
+            <div class="w1024"> <a target="_blank" href="https://docs.oracle.com" class="oracle-logo">
+              <img src="https://docs.oracle.com/en/operating-systems/oracle-linux/obe-style-js/img/oracle_doc_logo.png" alt="Oracle Documentation"/></a>
+            </div>
+        </header>
+        <!--end header-->
+
+        <div id="content">
+
+        <!-- The title below is displayed as the title at the top of the OBE page. It can be shorter than the title in the <title> element, above. -->
+        <!-- Use an imperative verb in the title. -->
+        <h1>Ansible Collection for Oracle Linux Automation Manager</h1>
+        <div class="w1024" style="clear:both; position:relative; margin-top:40px;">
+            <div class="navbackwide border-right"><!-- --></div>
+            <div id="shownav" title="Show Navigation" tabindex="0"><span class="fa fa-list"></span></div>
+            <div id="sidebar"><!-- -->
+               <div class="left-nav-tut"><!-- -->
+                   <div id="hidenavw" title="Hide Navigation" tabindex="0"><span class="fa fa-close"></span></div>
+                   <div id="navbar" class="left-nav-w"><!-- -->
+                       <img src="https://docs.oracle.com/en/operating-systems/oracle-linux/obe-style-js/img/obe_tag.png" class="obe-logo" alt="Oracle by Example branding" />
+                       <div id="toc" class="tocify"><!-- --></div>
+                   </div>
+               </div>
+           </div>
+           <div id="bookContainer">
+               <article>
+                   <section>
+                       <h2><img src="https://docs.oracle.com/en/operating-systems/oracle-linux/obe-style-js//img/32_begin.png" alt="section 0" height="32" width="32" class="num_circ"/>Overview</h2>
+                       <p>Oracle Linux Automation Manager (OLAM) and Oracle Linux Automation Engine are the latest additions to the Oracle Linux operating environment. 
+                           Together, they provide a cost-effective, powerful, scalable, and secure infrastructure automation framework for enterprise environments. 
+                           Additionally, they enable infrastructure as code, streamlining software provisioning. Also enabling configuration management, and application deployment, 
+                           which in turn reduces deployment errors, time to resolve problems, and increases compliance with security, privacy, and other policies. 
+                           Oracle Linux Automation Manager and Engine, based upon the open source AWX and Ansible projects respectively, are included with an Oracle Linux Premier Support subscription. </p>
+                       <h3>Background</h3>
+                       <p>This repository is a collection of ansible playbooks/code examples that helps automating any kind of time consuming process or operation usually executed manually. 
+                          Code examples are mainly focused on automation for Oracle Products with the option to leverage those with Oracle Linux Automation Manager and Oracle Linux Automation Engine.
+                          The <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/tree/main/playbooks">playbooks</a> directory contains sub-directories based on use case areas such as BTRFS, each sub-directory contains tested example playbooks
+                          available for customization and reuse. The <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/tree/main/templates">templates</a> directory contains example and tested template files (in j2 format) available for customization and reuse. 
+                          The rest of this page will discuss and explain use cases for Oracle Linux Automation Manager referencing example playbooks.
+                        </p>
+                       
+                        <h2><img src="https://docs.oracle.com/en/operating-systems/oracle-linux/obe-style-js//img/32_begin.png" alt="section 0" height="32" width="32" class="num_circ"/>What's New ?</h2>
+                        <h3>Automate Oracle Cloud Native Environment deployment by Oracle Linux Automation Manager on top of Oracle Linux KVM</h3>
+                        <p>There is a very useful <a target="_blank" href="https://videohub.oracle.com/media/How+to+deploy+OCNE+with+OLAM/1_gbtth719">video</a> on how to use OLAM to deploy OCNE virtualized using OLVM. 
+                            This video provides a demonstration of the deployment of the environment including a scale up and down; the playbooks and documentation are <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/tree/main/playbooks/OCNE">here</a>. 
+                        </p>
+                        <h2><img src="https://docs.oracle.com/en/operating-systems/oracle-linux/obe-style-js//img/32_begin.png" alt="section 0" height="32" width="32" class="num_circ"/>Managing Advanced Intrusion Detection Environment with Oracle Linux Automation Manager</h2>
+                        <p>There is an external <a target="_blank" href="https://www.oracle.com/a/ocom/docs/linux/using-advanced-intrusion-detection-environment.pdf">document</a> which explains how to use the 
+                            Advanced Intrusion Detection Environment (AIDE) with Oracle Linux Automation Manager; the playbooks discussed in this document are within the <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/tree/main/playbooks/AIDE">playbooks/AIDE</a> directory.
+                              </p>
+
+                       <h2><img src="https://docs.oracle.com/en/operating-systems/oracle-linux/obe-style-js//img/32_begin.png" alt="section 0" height="32" width="32" class="num_circ"/>Managing Btrfs snapshots with Oracle Linux Automation Manager</h2>
+                       <h3>Overview</h3>
+                       <p>Patching is a process in which code changes, “patches”, are deployed to physical or virtual servers to rectify or update the server’s operating system or software. Patch management helps 
+                        prevent data breaches by fixing security vulnerabilities. It also makes it easier to validate  that devices are running the latest software versions. Patch management is an essential part of server management.</p>
+                        
+                        <p>Before patching production systems, it is recommended that the end-to-end process be tested to help ensure services and operating environments provide the same or enhanced service post patching. If during testing 
+                        issues are encountered, the ability to rollback to the starting point is extremely useful; saving time and effort versus trying to uninstall patches. This snapshot approach is also useful when configuration changes 
+                        are due to be made, or tested, where in the case of failure a known state of service can be restored. </p>
+                        
+                        <p>Btrfs is a copy-on-write file system that is designed to address the expanding scalability requirements of large storage subsystems. Btrfs supports the following: snapshots, a rollback capability, checksum functionality 
+                        for data integrity, transparent compression, and integrated logical volume management. </p>
+                        
+                        <p>The Unbreakable Enterprise Kernels (UEK) for Oracle Linux has been providing the Btrfs file system since release 5 (UEK5). The current UEK kernel is release 7 (UEK7) which is based on upstream Linux kernel 5.15.
+                        For further details on UEK please refer to the <a target="_blank" href="https://docs.oracle.com/en/operating-systems/uek/">Unbreakable Enterprise Kernel documentation</a>. On Oracle Linux, the Btrfs file system type is supported on the Unbreakable Enterprise Kernel (UEK) releases only. 
+                        Oracle Linux Automation Manager and Oracle Linux Automation Engine are the latest additions to the Oracle Linux operating environment. Together, they provide a cost-effective, powerful, scalable, and secure infrastructure 
+                        automation framework for enterprise environments. Additionally, Oracle Linux Automation Manager and Engine enable infrastructure as code, streamlining software provisioning. They also streamline configuration management, 
+                        and application deployment, which in turn reduces deployment errors, time to resolve problems, and increases compliance with security, privacy, and other policies. Oracle Linux Automation Manager and Engine, based upon the open 
+                        source AWX and Ansible projects respectively, are included with an Oracle Linux Premier Support subscription. </p>
+                        
+                        <p>This section provides examples of using Btrfs snapshots and Oracle Linux Automation Manager. The examples are based upon a target server installed with Oracle Linux 8, running Unbreakable Enterprise Kernel with Btrfs for the root filesystem. 
+                        For further details on Oracle Linux please refer to the <a target="_blank" href="https://docs.oracle.com/en/operating-systems/oracle-linux/">official documentation</a>. </p>
+                       
+                        <h4>Reporting of Btrfs subvolume configuration using Oracle Linux Automation Manager</h4>
+                        <p>The example files referenced below need to exist within a Project on the Oracle Linux Automation Manager either in a GIT repository or stored locally. The target Oracle Linux 8 host needs to be part of the Oracle Linux Automation Manager 
+                         inventory and Credentials must exist (with sudo enabled). Finally, OLAM Templates are created to drive the playbooks created in YAML format. For further information on Oracle Linux Automation Manager please refer to the 
+                         <a target="_blank" href="https://docs.oracle.com/en/operating-systems/oracle-linux/8/oracle-linux-automation-manager/">Getting Started Guide</a>. </p>
+
+                         <p>The Btrfs subvolume report playbook will perform the following:</p>
+                         <ul>
+                            <li>Become the superuser</li>
+                            <li>Check the host is running Oracle Linux 8 with UEK and has Btrfs for the root file system; if any of these conditions are false the playbook will fail</li>
+                            <li>Report on the Btrfs subvolumes. There are id’s and snapshot names which are needed for the rollback, delete and rename playbooks</li>
+                            <li>Report on the ID of the current boot volume</li>
+                        </ul>
+                        <p>A successful result contains these sections of output from the Template Job:</p> 
+                        <figure><img src="files/Picture1.jpg" alt="Description of Btrfs subvolume, snapshot and boot id report follows" style="width: 587px; height: 262px;" />
+                            <figcaption>Example of Btrfs subvolume, snapshot and boot id report</figcaption>
+                        </figure>
+                        <p>An unsuccessful job, where one of the key criteria was not met, would contain these sections of output from the Template Job:</p>
+                        <figure><img src="files/Picture2.jpg" alt="Description of failed report due to missing prerequisites follows" style="width: 587px; height: 262px;" />
+                            <figcaption>Example of failed report due to missing prerequisites</figcaption>
+                        </figure>
+                        <p>The example <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/blob/main/playbooks/BTRFS/list_btrfs_snapshots.yaml">list_btrfs_snapshots.yaml playbook</a>
+                             is available within the Oracle Ansible Collection repository.</p>
+
+                        <h4>Create a Btrfs snapshot then update / patch to the latest using Oracle Linux Automation Manager</h4>
+                        <p>Before updating the host to the latest patches / packages a snapshot of the current Btrfs default subvolume is taken to provide a rollback environment, 
+                            should the update cause issues to any services.  </p>
+     
+                              <p>The create Btrfs snapshot and update playbook which runs on an Oracle Linux 8 host will perform the following:</p>
+                              <ul>
+                                 <li>Become the superuser</li>
+                                 <li>Take input from the Template for the variable snapshot_name which will be a directory name and therefore should avoid special characters</li>
+                                 <li>Check the host is running Oracle Linux 8 with UEK and has Btrfs for the root file system; if any of these conditions are false the playbook will fail</li>
+                                 <li>Check and fail the job if /mnt is already mounted. If it is not mounted, the command will fail but will be ignored and continue</li>
+                                 <li>Check and create if /mnt does not exist</li>
+                                 <li>Obtain and display the Btrfs top level subvolume id</li>
+                                 <li>Obtain and display the disk device supporting the root filesystem</li>
+                                 <li>Mount the root file system on /mnt using the Btrfs top level subvolume id and root filesystem disk device</li>
+                                 <li>Check and create if /mnt/snapshots does not exist</li>
+                                 <li>Create a Btrfs root snapshot in the form of snapshots/{{ snapshot_name }} </li>
+                                 <li>Install the yum-utils package if missing, as this is needed to enable automatic reboot</li>
+                                 <li>Update using dnf update to the latest available</li>
+                                 <li>Check and if required reboot</li>
+                             </ul>
+                             <p>From the Template, note that Prompt on Launch is enabled, presenting this screen for user input when the Template is launched: </p>
+                             <figure><img src="files/Picture3.jpg" alt="Description of example extra variables for the snapshot_name variable follows" style="width: 587px; height: 262px;" />
+                                 <figcaption>Example of extra variables for the snapshot_name variable</figcaption>
+                             </figure>
+                             <p>A successful result contains these sections of output from the Template Job:</p> 
+                             <figure><img src="files/Picture4.jpg" alt="Description of example output of a create Btrfs snapshot and update (1 of 2) follows" style="width: 587px; height: 262px;" />
+                                 <figcaption>Example output of a create Btrfs snapshot and update (1 of 2)</figcaption>
+                             </figure>
+                             <figure><img src="files/Picture5.jpg" alt="Description of example output of a create Btrfs snapshot and update (2 of 2) follows" style="width: 587px; height: 262px;" />
+                                 <figcaption>Example output of a create Btrfs snapshot and update (2 of 2)</figcaption>
+                             </figure>
+                             <p>The example <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/blob/main/playbooks/BTRFS/create_btrfs_snapshot_and_update.yaml">create_btrfs_snapshot_and_update.yaml playbook</a>
+                                  is available within the Oracle Ansible Collection repository.</p>
+          
+                       <h4>Remove a Btrfs snapshot using Oracle Linux Automation Manager</h4> 
+                       <p>If it is necessary to remove a Btrfs snapshot, the remove Btrfs snapshot playbook which runs on an Oracle Linux 8 host will perform the following:</p>
+                       <ul>
+                           <li>Take input from the Template for the variable snapshot_name. The remove playbook will append the string to the snapshot directory (for example snapshots/"{{ snapshot_name }}"</li>
+                           <li>Become the superuser</li>
+                           <li>Check the host is running Oracle Linux 8 with UEK and has Btrfs for the root file system; if any of these conditions are false the playbook will fail</li>
+                           <li>Check and fail the job if /mnt is already mounted. If it is not mounted, the command will fail but will be ignored and continue</li>
+                           <li>Check and fail if the default snapshot (the currently booted subvolume) is the delete target</li>
+                           <li>Check and create if /mnt does not exist</li>
+                           <li>Obtain and display the Btrfs top level subvolume id</li>
+                           <li>Obtain and display the disk device supporting the root filesystem</li>
+                           <li>Mount the root file system on /mnt using the Btrfs top level subvolume id and root filesystem disk device</li>
+                           <li>Delete the Btrfs snapshot</li>
+                           <li>Unmount /mnt</li>
+                       </ul>
+                       <p>From the Template an example of the snapshot_name variable which needs to match the target snapshot name. Note that Prompt on Launch is enabled and will present this screen for user input 
+                           when the Template is launched. The Btrfs subvolume report Template is useful for listing the current Btrfs snapshots with respect to selecting the target snapshot snapshot_name 
+                           field.</p> 
+                           <figure><img src="files/Picture6.jpg" alt="Description of example extra variables and Prompt on Launch setting follows" style="width: 587px; height: 262px;" />
+                            <figcaption>Example extra variables and Prompt on Launch setting</figcaption>
+                        </figure>
+                        <p>A successful result contains these sections of output from the Template Job:</p>
+                        <figure><img src="files/Picture7.jpg" alt="Description of example output of deleting a Btrfs snapshot (1 of 2) follows" style="width: 587px; height: 262px;" />
+                            <figcaption>Example output of deleting a Btrfs snapshot (1 of 2)</figcaption>
+                        </figure>
+                        <figure><img src="files/Picture8.jpg" alt="Description of example output of deleting a Btrfs snapshot (2 of 2) follows" style="width: 587px; height: 262px;" />
+                            <figcaption>Example output of deleting a Btrfs snapshot (2 of 2)</figcaption>
+                        </figure>
+                        <p>The example <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/blob/main/playbooks/BTRFS/delete_btrfs_snapshot.yaml">delete_btrfs_snapshot.yaml playbook</a>
+                            is available within the Oracle Ansible Collection repository.</p>
+                        
+                        <h4>Rollback to a Btrfs snapshot / subvolume using Oracle Linux Automation Manager</h4>
+                        <p>If it is necessary to rollback to a Btrfs snapshot, or boot from a different subvolume, the rollback Btrfs snapshot playbook which runs on an Oracle Linux 8 host 
+                            will perform the following:</p>
+                        <ul>
+                            <li>Take input from the Template for the variable id which will be in the format of 257, for example. This is the subvolume id</li>
+                            <li>Become the superuser</li>
+                            <li>Check the host is running Oracle Linux 8 with UEK and has Btrfs for the root file system; if any of these conditions are false the playbook will fail</li>
+                            <li>At the Btrfs level set the alterative root subvolume as the default</li>
+                            <li>At the grub level set the alternative root subvolume as the default</li>
+                            <li>Reboot the system</li>
+                        </ul>
+                        <p>From the Template an example of the id variable which is the id of the alternative root subvolume. Note that Prompt on Launch is enabled, presenting this screen for user input when 
+                            the Template is launched. The Btrfs subvolume report Template is useful for listing the current Btrfs snapshots with respect to selecting the target subvolume id field.</p>
+                        <figure><img src="files/Picture9.jpg" alt="Description of example extra variables and Prompt on Launch setting follows" style="fit-picture" />
+                                <figcaption>Example extra variables and Prompt on Launch setting</figcaption>
+                        </figure>
+                        <p>A successful result contains these sections of output from the Template Job:</p>
+                        <figure><img src="files/Picture10.jpg" alt="Description of example output of rollback a Btrfs snapshot / subvolume (1 of 2) follows" style="width: 587px; height: 262px;" />
+                            <figcaption>Example output of rollback a Btrfs snapshot / subvolume (1 of 2)</figcaption>
+                        </figure>
+                        <figure><img src="files/Picture11.jpg" alt="Description of example output of rollback a Btrfs snapshot / subvolume (2 of 2) follows" style="width: 587px; height: 262px;" />
+                            <figcaption>Example output of rollback a Btrfs snapshot / subvolume (2 of 2)</figcaption>
+                        </figure>
+                        <p>The example <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/blob/main/playbooks/BTRFS/rollback_btrfs_snapshot.yaml">rollback_btrfs_snapshot.yaml playbook</a>
+                            is available within the Oracle Ansible Collection repository.</p>
+                        <h4>Create an ad hoc Btrfs snapshot using Oracle Linux Automation Manager</h4>
+                        <p>It may be necessary to create an ad hoc snapshot, for example, if a firewall configuration change is to be made. The create ad hoc Btrfs snapshot playbook which runs on 
+                            an Oracle Linux 8 host will perform the following:</p>
+                        <ul>
+                            <li>Take input from the Template for the variable snapshot_name which will be a directory name and therefore should avoid special characters</li>
+                            <li>Become the superuser</li>
+                            <li>Check the host is running Oracle Linux 8with UEK and has Btrfs for the root file system; if any of these conditions are false the playbook will fail</li>
+                            <li>Check and fail the job if /mnt is already mounted. If it is not mounted, the command will fail but will be ignored and continue</li>
+                            <li>Check and create if /mnt does not exist</li>
+                            <li>Obtain and display the Btrfs top level subvolume id</li>
+                            <li>Obtain and display the disk device supporting the root filesystem</li>
+                            <li>Mount the root file system on /mnt using the Btrfs top level subvolume id and root filesystem disk device</li>
+                            <li>Check and create if /mnt/snapshots does not exist</li>
+                            <li>Create a Btrfs root snapshot in the form of snapshots/”{{ snapshot_name }}”</li>
+                            <li>Unmount /mnt</li>
+                        </ul>
+                        <p>From the Template, note that Prompt on Launch is enabled, presenting this screen for user input when the Template is launched: </p>
+                        <figure><img src="files/Picture12.jpg" alt="Description of example extra variables and Prompt on Launch setting follows" style="width: 587px; height: 262px;" />
+                            <figcaption>Example extra variables and Prompt on Launch setting</figcaption>
+                        </figure>
+                        <p>A successful result contains these sections of output from the Template Job:</p>
+                        <figure><img src="files/Picture13.jpg" alt="Description of example output of create an ad hoc Btrfs snapshot (1 of 2) follows" style="width: 587px; height: 262px;" />
+                            <figcaption>Example output of create an ad hoc Btrfs snapshot (1 of 2)</figcaption>
+                        </figure>
+                        <figure><img src="files/Picture14.jpg" alt="Description of example output of create an ad hoc Btrfs snapshot (2 of 2) follows" style="width: 587px; height: 262px;" />
+                            <figcaption>Example output of create an ad hoc Btrfs snapshot (2 of 2)</figcaption>
+                        </figure>
+                        <p>The example <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/blob/main/playbooks/BTRFS/create_adhoc_btrfs_snapshot.yaml">create_adhoc_btrfs_snapshot.yaml playbook</a>
+                            is available within the Oracle Ansible Collection repository.</p>
+                        <h4>Rename a Btrfs snapshot / subvolume using Oracle Automation Manager</h4> 
+                        <p>It may be necessary to rename a snapshot, for example, if it is no longer required and marked for deletion.  The rename Btrfs snapshot playbook which runs on an Oracle Linux 8 
+                            host will perform the following:</p>
+                        <ul>
+                            <li>Take input from the Template for the variables which will the existing snapshot directory name and new name which will be the name of the new snapshot (note, 
+                                this is a directory name, therefore should avoid special characters)</li>
+                            <li>Become the superuser</li>
+                            <li>Check the host is running Oracle Linux 8 with UEK and has Btrfs for the root file system; if any of these conditions are false the playbook will fail</li>
+                            <li>Check and fail the job if /mnt is already mounted. If it is not mounted, the command will fail but will be ignored and continue</li> 
+                            <li>Check and create if /mnt does not exist</li>
+                            <li>Obtain and display the Btrfs top level subvolume id</li> 
+                            <li>Obtain and display the disk device supporting the root filesystem</li> 
+                            <li>Mount the root file system on /mnt using the Btrfs top level subvolume id and root filesystem disk device</li> 
+                            <li>Check and fail if the target snapshot to rename does not exist</li>
+                            <li>Rename the Btrfs root snapshot in the form of snapshots/”{{ snapshot_name }}”</li>
+                            <li>Unmount /mnt</li>
+                        </ul>
+                        <p>From the Template, note that Prompt on Launch is enabled, presenting this screen for user input when the Template is launched: </p>
+                        <figure><img src="files/Picture15.jpg" alt="Description of example extra variables and Prompt on Launch setting follows" style="width: 587px; height: 262px;" />
+                            <figcaption>Example extra variables and Prompt on Launch setting</figcaption>
+                        </figure>
+                        <p>A successful result contains these sections of output from the Template Job:</p>
+                        <figure><img src="files/Picture16.jpg" alt="Description of example output of renaming a Btrfs snapshot (1 of 2) follows" style="width: 587px; height: 262px;" />
+                            <figcaption>Example output of renaming a Btrfs snapshot (1 of 2)</figcaption>
+                        </figure>
+                        <figure><img src="files/Picture17.jpg" alt="Description of example output of renaming a Btrfs snapshot (2 of 2) follows" style="width: 587px; height: 262px;" />
+                            <figcaption>Example output of renaming a Btrfs snapshot (2 of 2)</figcaption>
+                        </figure>
+                        <p>The example <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/blob/main/playbooks/BTRFS/rename_subvolume.yaml">rename_subvolume.yaml playbook</a>
+                            is available within the Oracle Ansible Collection repository.</p>
+                        <h2><img src="https://docs.oracle.com/en/operating-systems/oracle-linux/obe-style-js//img/32_begin.png" alt="section 0" height="32" width="32" class="num_circ"/>Managing Oracle Linux by Oracle Linux Automation Manager</h2>
+                        <p>Within the playbooks directory there is a an Oracle Linux Adminstration directory <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/tree/main/playbooks/OL_Admin">(OL_Admin)</a>. 
+                            This directory contains useful playbooks for various 
+                            administration tasks.
+                        </p>
+                        <h3>Add User</h3>
+                        <p>The <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/blob/main/playbooks/OL_Admin/adduser.yml">adduser.yml</a> playbook 
+                            performs the following:</p>
+                            <ul>
+                                <li>Become the superuser</li>
+                                <li>Offers a variable section which can either be edited or set as an extra variable for an OLAM template to be passed at runtime. these
+                                    variables are: username, password, enable sudo and enable sudo with passwordless function</li>
+                                <li>Create a user with sha512 password with the option to configure sudo with either passwordless or password sudo access</li>    
+                                <li>Set an authorized ssh key for the target user using a local pubilc key file</li>
+                            </ul>
+                        <h3>Hello World</h3>
+                        <p>The <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/blob/main/playbooks/OL_Admin/hello-world.yml">hello-world.yml</a> playbook 
+                        simply prints a Hello and welcome message and is a good playbook for initial testing.</p>
+                        <h3>Install HTTPD and configure an iptables based firewall</h3>
+                        <p>The <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/blob/main/playbooks/OL_Admin/iptables-httpd.yaml">iptables-httpd.yaml</a> playbook
+                        performs the following:</p>
+                        <ul>
+                            <li>Yum Install httpd packages</li>
+                            <li>Ensure httpd is running</li>
+                            <li>Insert an iptables rule for port 80</li>
+                        </ul> 
+                        <h3>Update Oracle Linux</h3>
+                        <p>The <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/blob/main/playbooks/OL_Admin/update_ol.yml">update_ol.yml</a> playbook
+                        performs the following:</p>
+                        <ul>
+                            <li>Become the superuser</li>
+                            <li>If needed, set a proxy</li>
+                            <li>Update either Oracle Linux 7 or 8 packages to the latest</li>
+                            <li>Check and if required reboot</li>
+                        </ul>
+                        <h3>Install and configure a VNC server</h3>
+                        <p>The <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/blob/main/playbooks/OL_Admin/vnc_install_configure.yaml">vnc_install_configure.yaml</a> playbook
+                        performs the following:</p>
+                        <ul>
+                            <li>Become the superuser</li>
+                            <li>Install the 'Server with GUI' package group on Oracle Linux 8 or higher or Oracle Linux 7</li>
+                            <li>Install the vnc package for Oracle Linux 8 or higher or Oracle Linux 7</li>
+                            <li>Configure and reload firewalld for the VNC ports</li>
+                            <li>Copy systemd template</li>
+                            <li>Assign an extra variable for the VNC username</li>
+                            <li>Set VNC geometry and session</li>
+                            <li>Create .vnc directory for VNC username</li>
+                            <li>Generate VNC password for the VNC username</li>
+                            <li>Change the permission to 600 for the VNC username .vnc/passwd file</li>
+                            <li>Start and enable the VNC service</li>
+                        </ul>
+                        <p>The playbook has extra variables which are assigned at runtime, details are in the header file of the playbook. This playbook also relies on a 
+                            <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/blob/main/templates/vncserver-service.j2">template</a> file which 
+                            is present within the <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/tree/main/templates">templates</a> directory.
+                        </p>
+
+                        <h2><img src="https://docs.oracle.com/en/operating-systems/oracle-linux/obe-style-js//img/32_begin.png" alt="section 0" height="32" width="32" class="num_circ"/>Managing Oracle Cloud Native Environment (OCNE) by Oracle Linux Automation Manager</h2>
+                        <p>Within the playbooks directory there is an OCNE directory <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/tree/main/playbooks/OCNE">(OCNE)</a>. 
+                            This directory contains useful playbooks, for example to deploy a full OCNE cluster including modules for load balancing and service mesh.
+                            Before these playbooks can be run there are some pre-requisities which must be in place first.
+                            Please review the configuration instructions before you run the playbooks.
+                        </p>
+                        <h3>Configuration</h3>
+                        <p>Download the OCNE files and sub-folders from the OCNE folder. The OCNE files referenced here need to 
+                        exist within a Project on the Oracle Linux Automation Manager either in a GIT repository or stored locally. 
+                        Make sure the following configuration steps are done before running the playbooks.
+                        </p>
+                        <h4>SSH keys</h4>
+                        <p>You need to generate ssh-keys for self-signed certificate distribution over the kubernetes nodes 
+                        during the installation process. Store the keys in the <i>&lt;playbookdir&gt;/files</i> directory, 
+                        for example:
+                        </p>
+                        <pre>      $ cd &lt;playbookdir&gt;/files
+      $ ssh-keygen -t rsa -f id_rsa -N '' -q
+      $ ls -l
+      -rw------- 1 opc opc 2610 Aug  8 11:22 id_rsa
+      -rw-r--r-- 1 opc opc  574 Aug  8 11:22 id_rsa.pub
+                        </pre>
+                        <h4>Inventory and Variables</h4>
+                        <p>
+                        The Inventory defines the hostnames and roles in the OCNE cluster deployment. Example inventory files 
+                        are provided in the <i>&lt;playbookdir&gt;/inventories</i> directory. Variables add additional configuration 
+                        parameters such as container-registry, high availability, environment names or module names. Example variables
+                        are provided in the <i>&lt;playbookdir&gt;/group_vars</i> directory. A full list of required variables are
+                        listed in the <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/tree/main/playbooks/OCNE">OCNE folder README file</a>.
+                        </p>
+                        <p>In Oracle Linux Automation Manager create a new inventory for the OCNE cluster deployment and populate
+                        the groups, hosts and variables as described in the example <i>hosts.ini</i> and <i>group_vars/all.yml</i> 
+                        files. 
+                        </p>
+                        <figure><img src="files/ocne01.png" alt="Create a new inventory for your OCNE cluster deployment" style="width: 587px;" />
+                            <figcaption>Step 1: create a new inventory for your OCNE cluster deployment</figcaption>
+                        </figure>
+
+                        <figure><img src="files/ocne02.png" alt="Add groups using the exact group names as shown" style="width: 587px;" />
+                            <figcaption>Step 2: add groups using the exact group names as shown</figcaption>
+                        </figure>
+
+                        <figure><img src="files/ocne03.png" alt="Add hostnames, assign to group depending the role in the cluster" style="width: 587px;" />
+                            <figcaption>Step 3: add hostnames, assign to group depending the role in the cluster</figcaption>
+                        </figure>
+
+                        <figure><img src="files/ocne04.png" alt="Expand the Variables section and add key-value pairs" style="width: 587px;" />
+                            <figcaption>Step 4: expand the Variables section and add key-value pairs as described in the group_vars</figcaption>
+                        </figure>
+                        <h3>Running Playbooks</h3>
+                        <p>There are several playbooks to be used in the deployment of OCNE, the overview of the deployment-playbooks
+                        is available in the <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/tree/main/playbooks/OCNE">OCNE folder README file</a>.
+                        The main playbook (deploy-ocne.yml) installs the initial cluster with the Kubernetes and Helm module included, 
+                        optionally there are playbooks for other modules such as the OCI-CCM module to setup a Oracle Cloud OCI 
+                        load balancer. Multiple deployment-playbooks may be configured in a workflow.
+                        </p>
+                        <p>
+                        In below screenshots a Template is created for the main playbook (deploy-ocne.yml). When launched with 
+                        the earlier created OCNE inventory it will install a complete kubernetes cluster on the selected hosts in 
+                        the Inventory.
+                        </p>
+                        <figure><img src="files/ocne05.png" alt="Create Template for initial OCNE deployment" style="width: 587px;" />
+                            <figcaption>Step 1: create Template for initial OCNE deployment</figcaption>
+                        </figure>
+
+                        <figure><img src="files/ocne06.png" alt="Launch the Template and select the earlier created OCNE inventory" style="width: 587px;" />
+                            <figcaption>Step 2: launch the Template and select the earlier created OCNE inventory</figcaption>
+                        </figure>
+
+
+                        <h2><img src="https://docs.oracle.com/en/operating-systems/oracle-linux/obe-style-js//img/32_begin.png" alt="section 0" height="32" width="32" class="num_circ"/>Oracle Cloud Infrastructure (OCI) management by Oracle Linux Automation Manager</h2>
+                        <p>Within the playbooks directory there is a an OCI directory <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/tree/main/playbooks/OCI">(OCI)</a>. 
+                            This directory contains useful playbooks, for example 
+                            tasks which are possible within an OCI compartment using Oracle Linux Automation Manager. Before these playbooks can be run there are some pre-requisities which must be in place first.
+                            Please review the following video from the Oracle Linux Automation Manager portal:
+                        </p>
+                        <ul>
+                            <li><a target="_blank" href="https://apexapps.oracle.com/pls/apex/f?p=44785:52:108246867153897:::52:P52_CONTENT_ID,P52_MODULE_ID,P52_ACTIVITY_ID,P52_EVENT_ID:31331,5981,27561,6932">Oracle Cloud Infrastructure Ansible Collection with Oracle Linux Automation Manager</a></li>
+                        </ul>
+                        <p>The following <a target="_blank" href="https://apexapps.oracle.com/pls/apex/f?p=44785:52:101110043693893:::52:P52_CONTENT_ID,P52_MODULE_ID,P52_ACTIVITY_ID,P52_EVENT_ID:31364,5981,27565,6932">video</a> is not a pre-requisite, 
+                            however it is useful if you want to run OLAM playbooks on resources within your OCI compartment. The video explains how to create a dynamic inventory of instances from your OCI compartment within OLAM.</p>
+                        <h3>Display an OCI compartment details</h3>
+                        <p>The <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/blob/main/playbooks/OCI/list_oci_compartment.yaml">list_oci_compartment.yaml</a> playbook
+                        performs the following:</p>
+                        <ul>
+                                <li>Assign an extra variable for the OCI compartment ID, this should be obtained from your user details within OCI</li>
+                                <li>Print the details for the OCI compartment</li>
+                         </ul>
+                         <h3>Display an OCI object storage bucket details</h3>
+                        <p>The <a target="_blank" href="https://github.com/simonhayler/OLAM/blob/main/list_buckets.yaml">list_buckets.yaml</a> playbook
+                        performs the following:</p>
+                        <ul>
+                                <li>Assign an extra variable for the OCI compartment ID, this should be obtained from your user details within OCI</li>
+                                <li>Print the details for the OCI object storage bucket</li>
+                         </ul>
+                         <h3>Create an OCI Oracle Linux 8 instance, including a Virtual Cloud Network, subnet, internet gateway and security list</h3>
+                        <p>The <a target="_blank" href="https://github.com/simonhayler/OLAM/blob/main/oci_create_instance.yaml">oci_create_instance.yaml</a> playbook
+                        requires the following extra variables: </p>
+                        <ul>
+                                <li>"rescue_test" This variable is for testing and will cause the playbook to fail which then initiates the clearing up of the instance and Virtual Cloud Network, by default this is set to false</li>
+                                <li>"instance_shape" This variable is the shape of the instance, by default this is set to VM.Standard2.1</li>
+                                <li>"instance_hostname" This variable is for the instance hostname, by default this is set to OLAMinstance</li>
+                                <li>"instance_image" This variable is for the instance image id, this is unique to the OCI region and availability domain. Please refer <a href="https://docs.cloud.oracle.com/iaas/images/image/501c6e22-4dc6-4e99-b045-cae47aae343f/">here</a> a,
+                                    a default example is given for reference</li>
+                                <li>"instance_ad" This variable is for the availability domain, a default example is given for reference</li>
+                                <li>"instance_compartment" This variable is for the compartment id, a default example is given for reference</li>
+                         </ul>
+                         <p>From the playbooks directory within our lab we created a directory called ssh. In here we placed a public key (called oci_id_rsa.pub) which is passed to the target instance for later connection using the opc user. 
+                            Refer <a target="_blank" href="https://www.oracle.com/webfolder/technetwork/tutorials/obe/cloud/compute-iaas/generating_ssh_key/generate_ssh_key.html">here</a> for information on how to create the keys. The playbook references this directory and public key. 
+                            This playbook also relies on two template files which create the ingress and egress rules for the security list: <a href="https://github.com/simonhayler/OLAM/blob/main/templates/egress_security_rules.yaml.j2">egress</a> &
+                            <a target="_blank" href="https://github.com/simonhayler/OLAM/blob/main/templates/ingress_security_rules.yaml.j2">ingress</a>;
+                            both of these files are present within the <a href="https://github.com/oracle-samples/ansible-collections/tree/main/templates">templates</a> directory. </p>
+                         
+                            <p>The playbook performs the following:</p>
+                         <ul>
+                            <li>Sets some generic variable details for the Virtual Cloud Network (VCN)</li>
+                            <li>References the ssh public key</li>
+                            <li>Creates the VCN</li>
+                            <li>Creates the Internet Gateway</li>
+                            <li>Create a Route Table to connect the Internet Gateway to the VCN</li>
+                            <li>Create the ingress and egress rules and load them into the security list</li>
+                            <li>Create a subnet with public access and links the security list and route table</li>
+                            <li>Launch the instance</li>
+                            <li>From the VNIC details gather and print the assigned public IP</li>
+                            <li>If the rescue_test variable is set to true delete the instance and VCN</li>
+                         </ul>
+                         <h3>Create an OCI Always Free Autonomous Database</h3>
+                         <p>The <a target="_blank" href="https://github.com/simonhayler/OLAM/blob/main/create_always_free_autonomous_database.yaml">create_always_free_autonomous_database.yaml</a> playbook
+                         requires the following extra variables: </p>
+                         <ul>
+                                 <li>"rescue_test" This variable is for testing and will cause the playbook to fail which then initiates the clearing up of the database, by default this is set to false</li>
+                                 <li>"display name" This variable is the display name of the database, by default this is set OLAM-ADB</li>
+                                 <li>"admin_password" This variable is for the database admin password, by default this is set to BEstr0ng_#11</li>
+                                 <li>"db_name" This variable is for the database name, by default this is set to OLAM-DB</li>
+                                 <li>"instance_compartment" This variable is for the compartment id, a default example is given for reference</li>
+                          </ul> 
+                          <p>The playbook performs the following:</p>
+                         <ul>
+                            <li>Sets some inherent variable details which are non-scalable</li>
+                            <li>Creates an always free autonomous database</li>
+                            <li>List details of the created database</li>
+                            <li>If the rescue_test variable is set to true delete the database</li>
+                         </ul>
+                         <h2><img src="https://docs.oracle.com/en/operating-systems/oracle-linux/obe-style-js//img/32_begin.png" alt="section 0" height="32" width="32" class="num_circ"/>Automating operations on Oracle Linux Virtualization Manager with Oracle Linux Automation Manager</h2>
+                        <p>Within the playbooks directory there is a an Oracle Linux Virtualization Manager directory <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/tree/main/playbooks/OLVM">(OLVM)</a>. 
+                            This directory contains useful playbooks, for example, the ability to list Virtual Machines (VM's) within an OLVM Cluster, also, the ability to create and delete an OLVM VM.
+                        </p> 
+                        <p>Before we can use the OLVM playbooks we need to install the <a target="_blank" href="https://docs.ansible.com/ansible/latest/collections/ovirt/ovirt/ovirt_vm_module.html#ansible-collections-ovirt-ovirt-ovirt-vm-module">ovirt.ovirt.ovirt_vm module</a>. 
+                        Please refer to this <a target="_blank" href="https://apexapps.oracle.com/pls/apex/f?p=44785:52:108246867153897:::52:P52_CONTENT_ID,P52_MODULE_ID,P52_ACTIVITY_ID,P52_EVENT_ID:31331,5981,27561,6932">video</a> which is referenced from the OCI section 
+                        above but describes how to use the OCI module. If you have followed these steps to use the OCI module then simply change your requirements.yaml file within your collections directory to be:</p>
+                        <pre>---
+                            collections:
+                              - name: oracle.oci
+                              - name: ovirt.ovirt
+                        </pre>
+                        <p>Then run a resync on your GIT based Project, this should install the ovirt module. If you have not configured OCI then just have the single entry for ovirt.ovirt.</p>
+                        <p>We also need password information which should be in the following form with a filename such as ovirt_passwords.yaml and placed in a directory such as /var/lib/awx/projects/files which should be owned by the awx user:</p>
+                        <pre>---
+                            olvm_password: Welcome1
+                            vm_root_passwd: Welcome1
+                        </pre>
+                        <p>These are password variables which we want to pass to the playbook in an encrypted form. Once the file is created then run the following:</p>
+                        <pre>sudo ansible-vault encrypt ./ovirt_passwords.yaml
+                        </pre>
+                        <p>This will ask for a Vault password which is similar to an ssh passphrase which will encrypt the file. Following the encryption cat the file which will produce something similar to:</p>
+                        <pre>$ANSIBLE_VAULT;1.1;AES256
+                            61653564613661666464653031353733623162623638633536623565336133303163643838626330
+                            6231383933663930383962323836316439306566633633390a613533613835326131333838346339
+                            30663030643734303833626537613937333165633764383062636534663361626532313235346436
+                            3066383432316330340a303566643065323230623732313738306266636365633662653365326534
+                            64353038396638616663303339306666376365656363313530623236313136336533623761646434
+                            63353863333731323461366462663830633839643661323163383261333738623136663564376233
+                            633865653537363938313836373032386630</pre>
+                        <p>We need the Vault password used to encrypt the file to create a Vault Credential to allow OLAM to decyrpt the file at runtime and enable the password variables to be used within the playbook. 
+                        To do this, via the OLAM UI, go Credentials > Green Plus to Add a credential of type Vault. Enter the Vault password which will then encrypt the entry and look similar to the screenshot below:    
+                        </p>
+                        <figure><img src="files/vault1.png" alt="Description of Vault credential for ovirt passwords" style="fit-picture" />
+                            <figcaption>Vault credential for ovirt passwords</figcaption>
+                        </figure>
+                        <p>We also need a second credential for OLAM to work with OLVM using a template, this is the standard machine ssh credential which is identical to other machine targets.
+                        I have a user (shayler) on the OLVM server with SSH certificates in place. The following screenshot is one of the Templates below showing the credentials needed:</p>
+                        <figure><img src="files/vault2.png" alt="Description of credentials needed for an OLVM for ovirt Template" style="fit-picture" />
+                            <figcaption>Credentials needed for an OLVM for ovirt Template</figcaption>
+                        </figure>
+                        <h3>Display Virtual Machine (VM) details within an OLVM Cluster</h3>
+                        <p>The <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/blob/main/playbooks/OLVM/ovirt_list_vms_by_cluster.yaml">ovirt_list_vms_by_cluster.yaml</a> playbook
+                        performs the following:</p>
+                        <ul>
+                                <li>Assigns two variables for the OLVM Cluster name and OLVM VM (see the screenshot above); both of these can use * to filter</li>
+                                <li>Accesses the OLVM manager and prints the details for VM's within the selected Cluster(s)</li>
+                         </ul>  
+                        <h3>Create a Virtual Machine (VM) within an OLVM Cluster</h3>
+                        <p>The <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/blob/main/playbooks/OLVM/ovirt_create_vm.yaml">ovirt_create_vm.yaml</a> playbook
+                        performs the following:</p>
+                        <ul>
+                                <li>Sets variables for OLVM access and also how the created OLVM VM will be configured</li>
+                                <li>It is possible to define any of these variables as additional variables which can be changed at runtime using an OLAM template</li>
+                                <li>Access the OLVM Manager</li>
+                                <li>Create the VM using an OLVM template</li>
+                                <li>Cloud Init is used as an example to set a hostname</li>
+                                <li>Clean up the Authorization Token used to access the OLVM Manager</li>
+                         </ul>  
+                         <h3>Delete a Virtual Machine (VM) within an OLVM Cluster</h3>
+                        <p>The <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/blob/main/playbooks/OLVM/ovirt_delete_vm.yaml">ovirt_delete_vm.yaml</a> playbook
+                        performs the following:</p>
+                        <ul>
+                                <li>Assigns an extra variable for the VM name to be deleted</li>
+                                <li>Access the OLVM Manager</li>
+                      
+                        <li>Delete the VM</li>
+                                <li>Clean up the Authorization Token used to access the OLVM Manager</li>
+                         </ul>  
+
+                         
+                        <h2><img src="https://docs.oracle.com/en/operating-systems/oracle-linux/obe-style-js//img/32_begin.png" alt="section 0" height="32" width="32" class="num_circ"/>Automating STIG Remediation </h2>
+                        <h3> Overview </h3>
+                        <p>Security Technical Implementation Guide is published as a tool to improve the security of Department of Defense (DoD) information systems. The requirements are derived from the National Institute of Standards and Technology (NIST) 800-53 and related documents. 
+                           The rules and the remediation details are well documented here:
+                           Reference: https://static.open-scap.org/ssg-guides/ssg-ol8-guide-standard.html .
+                           <br>Ensuring the systems are compliant to the STIG rules would require manual modifications to the configuration files which can not only be time consuming but also prone to human errors.</br>
+                           <br>Using ansible playbook, the manual tasks can be automated to multiple servers in a short duration.</br>
+
+                        </p>
+                        <h3>Prerequisites</h3>
+                                <ul>
+                                 <li>Root access to the target machines on which the remediation will be applied</li>
+                                 <li> Inventories, Credentials set up from the OLAM Manager </li>
+                                 <li> The scope of the playbook is for on premise Oracle Linux 8 machines </li>
+                        <h3>Installing openscap</h3>
+                                 <p>The <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/blob/main/playbooks/OL_Admin/hello-world.yml">openscap.yml</a> playbook 
+                        Installs the OpenSCAP package and runs a scan against the STIG profile.</p>                           
+                               <ul>
+                                <li> SCAP provides an automated, standardized method for evaluating a system's compliance against security standards.</li>
+                                <li>Installs OpenSCAP package and its dependancies </li>
+                            </ul>
+                        <h3>Remediation Playbook</h3>
+                        <p>The <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/blob/main/playbooks/OL_Admin/hello-world.yml">ol8-playbook-stig.yml.yml</a> playbook 
+                         has the set of tasks to be applied.</p>                           <ul>
+                            <li>Snippet of each task is as follows </li>
+                                 <pre>---
+                                   - name: Ensure aide is installed
+                                     package:
+                                        name: '{{ item }}'
+                                        state: present
+                                     with_items:
+                                       - aide
+                                      when: ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
+                                      tags:
+                                        - DISA-STIG-OL08-00-030650
+                                        - NIST-800-53-AU-9(3)
+                                        - NIST-800-53-AU-9(3).1
+                                        - aide_check_audit_tools
+                                        - low_complexity
+                                        - low_disruption
+                                        - medium_severity
+                                        - no_reboot_needred
+                                        - restrict_strategy   
+                              </pre>
+                             <li>Every task is associated with a tag that can be used when executing the template from the OLAM Manager, using which only required remediation can be applied</li>
+                              <figure><image src= "image2022-8-12_19-54-24.png"  alt="Job Tags" style="width: 540px; height: 200px;" /> </figure>                          
+                              <li>Similarly, the tasks which are not required can be skipped using "Skip Tags" from OLAM when launching the template.</li>
+                              <figure><image src= "image2022-9-8_22-31-15.png"  alt="Skip Job Tags" style="width: 587px; height: 262px;" /> </figure>  
+                              <li>Once the template is launched, the tasks will be executed sequentially. </li>
+                             <figure><image src= "image2022-8-26_14-16-13.png"  alt="Skip Job Tags" style="width: 587px; height: 262px;" /> </figure> </ul>
+                     <h3>Considerations before applying the playbook</h3> 
+                       <p>As part of applying remediation, there would be multiple modifications made and hence it is necessary to review each tasks. Here are few examples:
+                       <ul>
+                       <li> DISA-STIG-OL08-00-010550 - Disables SSH root login. SSH session to the servers might give an "Access Denied" error. </li>
+                       <li> DISA-STIG-OL08-00-010020 - Enables FIPS, very rarely the system might halt at boot pointing to FIPS.</li>
+                       <li>DISA-STIG-OL08-00-010670 - Disables kdump services. </li>
+                       </ul>
+
+                     <h3>Rescanning for Compliance</h3>
+                     <p> Post running the playbook, rescan the system using OpenSCAP tool to check the achieved compliance score </p>
+                     <pre> 
+                       $ sudo oscap xccdf eval --profile stig\
+                         --results=path-to-results.xml --oval-results \
+                         --report=path-to-report.html \
+                         --check-engine-results path-to-xccdf-document
+                       </pre>                        
+
+        <!-- need to add footer section at the end of the page-->  
+    </pre>
+</li>
+</ol>
+</section>
+
+
+<!--
+<hr/>
+<section>
+<h2 id="next"  style="text-align: left;"><img src="https://docs.oracle.com/en/operating-systems/oracle-linux/obe-style-js//img/32_next.png" alt="next step" height="32" width="32" class="num_circ"/>Next Tutorial</h2>
+<p>...</p>
+</section>
+-->
+<hr/>
+<section>
+<!-- Include the More Information section only in a standalone tutorial or in the final lab or tutorial in a series (not in a learning path) -->
+<h2 id="more_info"  style="text-align: left;"><img src="https://docs.oracle.com/en/operating-systems/oracle-linux/obe-style-js//img/32_more.png" alt="more information" height="32" width="32" class="num_circ"/>Want to Learn More?     </h2>
+<ul>
+ <li><a target="_blank" href="https://docs.oracle.com/en/operating-systems/oracle-linux/8/oracle-linux-automation-manager/index.html" target="_blank">Oracle Linux Automation Manager Getting Started Guide</a></li>
+ <li><a target="_blank" href="https://www.oracle.com/linux/" target="_blank">Oracle.com/linux</a></li>
+ <li><a target="_blank" href="https://yum.oracle.com/oracle-linux-downloads.html" target="_blank">Download Oracle Linux</a></li>
+ <li><a target="_blank" href="https://docs.oracle.com/en/operating-systems/oracle-linux/" target="_blank">Oracle Linux product documentation</a></li>
+ <li><a target="_blank" href="https://www.oracle.com/a/ocom/docs/value-of-oraclelinux-support.pdf" target="_blank">Oracle Linux Premier Support Information</a></li>
+</ul>
+</section>
+<hr/>
+</article>
+</div>
+<br class="clearfloat"/>
+</div>
+</div>
+<!--close main-->
+<!--end content-->
+<div class="footer-container ">
+<div style="max-width: 994px; padding:10px 0 0 17px;">
+<footer class="footer-list">
+<ul>
+<li> <a target="_blank" href="https://www.oracle.com/corporate/index.html" target="_blank">About Oracle</a> </li>
+<li> <a target="_blank" href="https://www.oracle.com/us/corporate/contact/index.html" target="_blank">Contact Us</a> </li>
+<li> <a target="_blank" href="https://www.oracle.com/us/legal/index.html" target="_blank">Legal Notices</a> </li>
+<li> <a target="_blank" href="https://www.oracle.com/us/legal/terms/index.html" target="_blank">Terms of Use</a> </li>
+<li> <a target="_blank" href="https://www.oracle.com/us/legal/privacy/index.html" target="_blank">Your Privacy Rights</a> </li>
+<li> <a target="_blank" href="https://www.oracle.com/pls/topic/lookup?ctx=cpyr&amp;id=en">Copyright © 2022, Oracle and/or its affiliates. All rights reserved.</a></li>
+</ul>
+</footer>
+</div>
+<script src="https://www.oracleimg.com/us/assets/metrics/ora_docs.js"></script>
+</div>
+<!-- OBE Dialog Box code 10/15/2018 -->
+<!-- DO NOT ALTER THE CODE BELOW   -->
+<div id="lpModal" class="modal">
+<!-- Modal hdr and body -->
+<div id="obe_dialog" class="modal-content">
+<div class="modal-header">
+<a href="#" class="close">
+<span class="close">&#x000D7;</span>
+</a>
+<h1>Associated Learning Paths</h1>
+</div>
+<div id="dialog-content" >
+</div>
+<div id="dialog-close" class="closeBtn">
+<a href="#" class="close2">
+<p class="close2">
+<span>&#160;&#160;View&#160;&#160;</span>
+</p>
+</a>
+</div>
+</div>
+</div>
+<!-- END OBE Dialog Box code -->           
+    </body>
+</html>
