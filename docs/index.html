@@ -551,29 +551,53 @@
                          
                         <h2><img src="https://docs.oracle.com/en/operating-systems/oracle-linux/obe-style-js//img/32_begin.png" alt="section 0" height="32" width="32" class="num_circ"/>Automating STIG Remediation </h2>
                         <h3> Overview </h3>
-                        <p>Security Technical Implementation Guide is published as a tool to improve the security of Department of Defense (DoD) information systems. The requirements are derived from the National Institute of Standards and Technology (NIST) 800-53 and related documents. 
-                           The rules and the remediation details are well documented here:
-                           Reference: https://static.open-scap.org/ssg-guides/ssg-ol8-guide-standard.html .
+                        <p>The Security Technical Implementation Guide (STIG), which is published by the Defense Information Systems Agency (DISA), is a document that provides guidance on configuring a system to meet cybersecurity requirements for deployment within the Department of                 Defense (DoD) IT network systems. 
+                           The  STIG guidelines have been included in the scap-security-guide package available under the ol8_appstream channel, which can be used with the openscap tool for evaluating the compliance of an Oracle Linux installation.
+                            Individual rules and the remediation details are well documented in <a href="https://static.open-scap.org/ssg-guides/ssg-ol8-guide-standard.html">sisg-ol8-guide-standard</a>.
+                           The scap-security-guide available for Oracle Linux 8 machines provides the remediation playbooks for different profiles including STIG, which is located under /usr/share/scap-security-guide/ansible/ .
                            <br>Ensuring the systems are compliant to the STIG rules would require manual modifications to the configuration files which can not only be time consuming but also prone to human errors.</br>
                            <br>Using ansible playbook, the manual tasks can be automated to multiple servers in a short duration.</br>
 
                         </p>
                         <h3>Prerequisites</h3>
                                 <ul>
-                                 <li>Root access to the target machines on which the remediation will be applied</li>
-                                 <li> Inventories, Credentials set up from the OLAM Manager </li>
-                                 <li> The scope of the playbook is for on premise Oracle Linux 8 machines </li>
+                                 <li>SSH access for root user to the target machines on which the remediation will be applied.</li>
+                                 <li> Inventories, Credentials, Project set up from the OLAM Manager. </li>
+                                 <li> The scope of the playbook is for on premise Oracle Linux 8 machines. </li></ul>
                         <h3>Installing openscap</h3>
-                                 <p>The <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/blob/main/playbooks/OL_Admin/hello-world.yml">openscap.yml</a> playbook 
-                        Installs the OpenSCAP package and runs a scan against the STIG profile.</p>                           
-                               <ul>
-                                <li> SCAP provides an automated, standardized method for evaluating a system's compliance against security standards.</li>
-                                <li>Installs OpenSCAP package and its dependancies </li>
-                            </ul>
+                         <p> On the target systems where the remediation will be applied, ensure to have the latest version of OpenSCAP package installed.
+                             Run an initial scan against the STIG profile using the following command to understand the compliance score and the rules marked as failure. </p>
+                         <pre>
+                          # oscap xccdf eval  --profile stig  --results /tmp/<path-to-result>.xml --report /tmp/<path-to-report>.html --cpe /usr/share/xml/scap/ssg/content/ssg-ol8-cpe-dictionary.xml  /usr/share/xml/scap/ssg/content/ssg-ol8-xccdf.xml 
+                         </pre>
+                                 <p>If there are a large number of target hosts, the same can be automated using a simple playbook as follows: </p>
+                        <pre>
+                          - hosts: all
+                            tasks:
+ 
+                             - name: install openscap scanner
+                               package:
+                                  name: openscap
+                                  state: latest
+                               with_items:
+                                 - openscap-scanner
+                                 - scap-security-guide
+ 
+                             - name: run openscap
+                               command: oscap xccdf eval \
+                                        --profile stig \
+                                        --results /tmp/ssg.xml
+                                        --report /var/www/html/ssg-results.html \
+                                        --cpe /usr/share/xml/scap/ssg/content/ssg-ol8-cpe-dictionary.xml \
+                                        /usr/share/xml/scap/ssg/content/ssg-ol8-xccdf.xml \
+                               ignore_errors: True
+                        </pre> 
+                        <p> The above playbook stores the report at /var/www/html/ssg-results.html and results at /tmp/ssg.xml respectively. The playbook is also available in the Github repository </p>
+
                         <h3>Remediation Playbook</h3>
-                        <p>The <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/blob/main/playbooks/OL_Admin/hello-world.yml">ol8-playbook-stig.yml.yml</a> playbook 
+                        <p>The <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/blob/main/playbooks/STIG/ol8-playbook-stig.yml">ol8-playbook-stig.yml</a> playbook 
                          has the set of tasks to be applied.</p>                           <ul>
-                            <li>Snippet of each task is as follows </li>
+                            <li>Snippet of a task is as follows </li>
                                  <pre>---
                                    - name: Ensure aide is installed
                                      package:
@@ -590,15 +614,16 @@
                                         - low_complexity
                                         - low_disruption
                                         - medium_severity
-                                        - no_reboot_needred
+                                        - no_reboot_needed
                                         - restrict_strategy   
                               </pre>
-                             <li>Every task is associated with a tag that can be used when executing the template from the OLAM Manager, using which only required remediation can be applied</li>
-                              <figure><image src= "image2022-8-12_19-54-24.png"  alt="Job Tags" style="width: 540px; height: 200px;" /> </figure>                          
+                             <li>Every task is associated with a tag that can be used when executing the template from the OLAM Manager, using which only required remediation can be applied.</li>
+                                 Few of the common tags include : no_reboot_required, medium_complexity, restrict_strategy, low_disruption.
+                              <figure><image src= "files/Picture19.png"  alt="Job Tags" style="width: 540px; height: 200px;" /> </figure>                          
                               <li>Similarly, the tasks which are not required can be skipped using "Skip Tags" from OLAM when launching the template.</li>
-                              <figure><image src= "image2022-9-8_22-31-15.png"  alt="Skip Job Tags" style="width: 587px; height: 262px;" /> </figure>  
+                              <figure><image src= "files/Picture20.png"  alt="Skip Job Tags" style="width: 587px; height: 262px;" /> </figure>  
                               <li>Once the template is launched, the tasks will be executed sequentially. </li>
-                             <figure><image src= "image2022-8-26_14-16-13.png"  alt="Skip Job Tags" style="width: 587px; height: 262px;" /> </figure> </ul>
+                             <figure><image src= "files/Picture21.png"  alt="Skip Job Tags" style="width: 587px; height: 262px;" /> </figure> </ul>
                      <h3>Considerations before applying the playbook</h3> 
                        <p>As part of applying remediation, there would be multiple modifications made and hence it is necessary to review each tasks. Here are few examples:
                        <ul>
