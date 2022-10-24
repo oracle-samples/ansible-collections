@@ -1,0 +1,20 @@
+- hosts: all
+ 
+  tasks:
+ 
+  - name: install openscap scanner
+    package:
+      name: openscap
+      state: latest
+    with_items:
+    - openscap-scanner
+    - scap-security-guide
+ 
+  - name: run openscap
+    command: oscap xccdf eval \
+               --profile stig \
+               --results /tmp/ssg.xml
+               --report /var/www/html/ssg-results.html \
+               --cpe /usr/share/xml/scap/ssg/content/ssg-ol8-cpe-dictionary.xml \
+               /usr/share/xml/scap/ssg/content/ssg-ol8-xccdf.xml \
+    ignore_errors: True
