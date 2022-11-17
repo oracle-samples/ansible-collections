@@ -20,10 +20,9 @@
 
   vars:
     ol_version: "{{ ansible_facts['distribution_major_version'] }}"
-    baseurl_ksplice: "http://localyum.example.com/repo/ol{{ ol_version }}_x86_64_ksplice"
-    install_on_reboot: "yes"
-    upgrade_on_reboot: "yes"
-    skip_apply_after_pkg_install: "false"
+    i_o_r: "{{ install_on_reboot | default('yes') }}"
+    u_o_r: "{{ upgrade_on_reboot | default('yes') }}"
+    skip_a_a_p_i: "{{ skip_apply_after_pkg_install | default('false') }}"
 
   tasks:
 
@@ -44,25 +43,25 @@
     package: name=uptrack-offline state=present
 
   - name: Adjust install_on_reboot in uptrack.conf configuration file
-    ini_file:
+    community.general.ini_file:
       dest: /etc/uptrack/uptrack.conf
       section: Settings
       option: install_on_reboot
-      value: "{{ install_on_reboot }}"
+      value: "{{ i_o_r }}"
 
   - name: Adjust upgrade_on_reboot in uptrack.conf configuration file
     ini_file:
       dest: /etc/uptrack/uptrack.conf
       section: Settings
       option: upgrade_on_reboot
-      value: "{{ upgrade_on_reboot }}"
+      value: "{{ u_o_r }}"
 
   - name: Adjust skip_apply_after_pkg_install in uptrack.conf configuration file
     ini_file:
       dest: /etc/uptrack/uptrack.conf
       section: Settings
       option: skip_apply_after_pkg_install
-      value: "{{ skip_apply_after_pkg_install }}"
+      value: "{{ skip_a_a_p_i }}"
 
   - name: Create daily cronjob to download uptrack-updates
     copy:
