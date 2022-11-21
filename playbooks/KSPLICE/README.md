@@ -1,5 +1,6 @@
 # Ksplice - Oracle Linux Ksplice Ansible Playbooks
 
+
 A collection of playbooks to install Ksplice zero downtime patching on Oracle Linux servers. Ksplice is an Oracle Linux Premier Support service.
 
 Ksplice is available in online or offline deployment scenarios for kernel patching and/or userland patching. Ksplice Uptrack is the kernel patching client, while Ksplice Enhanced is the kernel and userland patching client.
@@ -18,7 +19,6 @@ When the playbook is finished, Ksplice is configured to do daily checks for new 
 
 | Variable | Default | Description |
 | -------- | -------- | ----------- |
-| ol_version | dynamic | Major version of the OS, ansible_facts['distribution_major_version']
 | baseurl_ksplice |  | URL to the local ULN mirror, eg http://localyum.example.com/repo/ol{{ ol_version }}_x86_64_ksplice
 | install_on_reboot | yes | Automatically install earlier applied updates at boot time
 | upgrade_on_reboot | yes | Automatically install all (earlier applied and new) available updates at boot time

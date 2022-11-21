@@ -23,11 +23,11 @@
   gather_facts: yes
 
   vars:
-    install_on_reboot: "yes"
-    upgrade_on_reboot: "yes"
-    autoinstall: "yes"
-    https_proxy: "None"
-    first_update: true
+    i_o_r: "{{ install_on_reboot | default('yes') }}"
+    u_o_r: "{{ upgrade_on_reboot | default('yes') }}"
+    autoinst: "{{ autoinstall | default('yes') }}"
+    https_pr: "{{ https_proxy | default('None') }}"
+    first_updt: "{{ first_update | default('true') }}"
 
   tasks:
 
@@ -42,30 +42,30 @@
       dest: /etc/uptrack/uptrack.conf
       section: Settings
       option: install_on_reboot
-      value: "{{ install_on_reboot }}"
+      value: "{{ i_o_r }}"
 
   - name: Adjust upgrade_on_reboot in uptrack.conf configuration file
     ini_file:
       dest: /etc/uptrack/uptrack.conf
       section: Settings
       option: upgrade_on_reboot
-      value: "{{ upgrade_on_reboot }}"
+      value: "{{ u_o_r }}"
 
   - name: Adjust autoinstall in uptrack.conf configuration file
     ini_file:
       dest: /etc/uptrack/uptrack.conf
       section: Settings
       option: autoinstall
-      value: "{{ autoinstall }}"
+      value: "{{ autoinst }}"
 
   - name: Adjust https_proxy in uptrack.conf configuration file
     ini_file:
       dest: /etc/uptrack/uptrack.conf
       section: Network
       option: https_proxy
-      value: "{{ https_proxy }}"
+      value: "{{ https_pr }}"
 
   - name: Update to latest Ksplice uptrack updates
     ansible.builtin.command: /usr/sbin/uptrack-upgrade --all -y
-    when: first_update == true
+    when: first_updt == true
   
