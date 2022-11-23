@@ -9,8 +9,8 @@ RPM Package scap-security-guide provides the remediation playbooks for different
 - ol8-playbook-stig.yml - Applies the remediation for STIG profile to the specified set of hosts. 
 
 ## Considersations
-As part of the remediation activtity, there could be many modifications made to the target host. Hence, kindly review each tasks before preoceeding.
-Here are the exaples, to list a few:
+As part of the remediation activtity, there could be many modifications made to the target host. Hence, kindly review each task before proceeding.
+Here are the examples, to list a few:
 
 - DISA-STIG-OL08-00-010550 - Disables SSH root login. SSH session to the servers might give an "Access Denied" error.
 - DISA-STIG-OL08-00-010020 - Enables FIPS. Ensure to reboot the host for the FIPS to be enabled. Else, though the remediation is applied, the rule will still be marked as failed.
