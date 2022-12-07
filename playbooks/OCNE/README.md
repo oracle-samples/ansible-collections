@@ -1,6 +1,6 @@
 # OCNE - Oracle Cloud Native Environment Ansible Playbooks
 
-The Oracle Cloud Native Environment playbooks are simplified versions of the [OCNE Deployment Tool](https://github.com/oracle/ocne-deploy-tool). The playbooks support servers on Oracle Linux 8 with the latest version of Oracle Cloud Native Environment (OCNE).
+The Oracle Cloud Native Environment playbooks support servers on Oracle Linux 8 with the latest version of Oracle Cloud Native Environment (OCNE). The playbooks only supports the quick install procedure with an configuration file.
 
 These are the playbooks to run in Ansible:
 
@@ -9,30 +9,26 @@ These are the playbooks to run in Ansible:
 * deploy-mod-ociccm.yml - Deploys the OCI-CCM module when running in Oracle OCI used for OCI loadbalancer and storage
 * deploy-mod-istio.yml - deploys Istio service mesh
 * deploy-mod-olm.yml - deploys OCNE lifecycle manager for Operators
-* upscale-ocne.yml - add control plane or worker nodes to existing cluster
-* downscale-ocne.yml - scales cluster back to initial amount of servers
-* undeploy-ocne.yml - removes an OCNE environment including additional modules
-* uninstall-ocne.yml - removes all OCNE packages from the servers
-
-The playbooks are tested with OCNE 1.5 and run with the ansible CLI and Oracle Linux Automation Manager.
+* reset-ocne.yml - removes an OCNE environment including additional modules
 
 
 # Configuration
 
 Make sure the following configuration steps are done before running the playbooks.
 
-## SSH keys
-You need to generate ssh-keys for self-signed certificate distribution over the kubernetes nodes during the installation process. Store the keys in the playbooks directory, for example:
+## OCNE Configuration file
 
-    $ cd <playbookdir>/files
-    $ ssh-keygen -t rsa -f id_rsa -N '' -q
-    $ ls -l
-    -rw------- 1 opc opc 2610 Aug  8 11:22 id_rsa
-    -rw-r--r-- 1 opc opc  574 Aug  8 11:22 id_rsa.pub
+The playbooks use the [Quick Install using Configuration File](https://docs.oracle.com/en/operating-systems/olcne/1.5/quickinstall/task-provision-config.html) installation scenario.
+The configuration file includes all information about the environments and modules you want to create. 
+This file in combination with the quick install procedure of OCNE saves repeated steps in the 
+installation process. 
 
+The OCNE playbooks expect to have a configuration file in the `<playbookdir>/files` directory with file extension `.yaml`. You can name the file whatever you want as long as the file-name is added to the playbook variables (eg: `env_file: ocne-environment.yaml`) for you intended OCNE cluster.
+
+Information on how to create a configuration file is explained in the [OCNE Platform CLI documentation](https://docs.oracle.com/en/operating-systems/olcne/1.5/olcnectl/config.html#write).
 
 ## Inventory file
-The Inventory file defines the hostnames and roles in the OCNE cluster. Example inventory files are provided in the `<playbookdir>/inventories` directory. The `hosts-example.ini` file provides configuration information to deploy the initial OCNE cluster, the `hosts-upscale-example.ini` file provides configuration information to upscale the cluster with additional control plane or worker nodes.
+The Inventory file defines the hostnames and roles in the OCNE cluster. Example inventory files are provided in the `<playbookdir>/inventories` directory. The `hosts-example.ini` file provides configuration information to deploy the initial OCNE cluster. 
 
 Add the hostnames of your OCNE cluster to the following groups in the inventory file:
 | Variable | Required | Description |
@@ -40,12 +36,10 @@ Add the hostnames of your OCNE cluster to the following groups in the inventory 
 | ocne_op | Yes | the OCNE Operator Node
 | ocne_kube_control | Yes | the Kubernetes Control Plane Nodes
 | ocne_kube_worker | Yes | the Kubernetes Worker Nodes
-| ocne_new_kube_control | | leave empty for initial cluster, but add control plane hostnames when you want to upscale the cluster
-| ocne_new_kube_worker | | leave empty for initial cluster, but add worker hostnames when you want to upscale the cluster
 
 
 ## Variables
-The variables for the OCNE cluster are defined in the `<playbookdir>/group_vars/all.yml` file. Example variable files are provided for an initial cluster and extended cluster. Below is a list of the used variables. All the variables must exist in the file, some are required others can be left empty when not in use.
+The variables for the OCNE cluster are defined in the `<playbookdir>/group_vars/all.yml` file. Example variable files are provided for an initial cluster. Below is a list of the used variables. All the variables must exist in the file, some are required others can be left empty when not in use.
 
 | Variable | Required | Description |
 | -------- | -------- | ----------- |
@@ -53,11 +47,9 @@ The variables for the OCNE cluster are defined in the `<playbookdir>/group_vars/
 | my_https_proxy | | Proxy details, leave empty if not using proxy
 | my_http_proxy | | Proxy details, leave empty if not using proxy
 | my_no_proxy | | Proxy details, leave empty if not using proxy
+| do_preparation | Yes | Set do_preparation to _true_ for the first deployment, it configures SSH keys, certificates and repositories. After a reset_ocne playbook run it should be set to _false_ to skip the basic plumbing
 | container_registry | Yes | Container registry path to get the OCNE component container images
-| ha | Yes | Set to _true_ to deploy high availability control planes, _false_ for a single control plane. Consider to use _true_ to easily scale to multi-master control planes in a later phase
-| virtual_ip | | The virtual IP address for an olcne-nginx with internal load balancer, required when _ha_ is _true_
-| restricted_ips | Yes | set to _true_ to set up certificates for the restricted external IPs Webhook
-| ocne_repo | Yes | Set the OCNE dnf repository of the version to install (ol8_olcne15)
+| virtual_ip | | The virtual IP address for an olcne-nginx with internal load balancer
 | ocne_environment | Yes | Set name for the OCNE environment
 | ocne_k8s | Yes | Set name of the OCNE Kubernetes module
 | ocne_helm | Yes | Set name of the OCNE Helm module, installed by default but only used when other modules are configured 
@@ -65,16 +57,9 @@ The variables for the OCNE cluster are defined in the `<playbookdir>/group_vars/
 | ocne_olm | | Set name of the OCNE OLM module. Leave empty if not creating OLM module
 | ocne_oci | | Set name of the OCNE OCI-CCM module. Leave empty if not creating CCM module
 | ocne_metallb | | Set name of the OCNE MetalLB module. Leave empty if not creating CCM module
-| control_nodes | Yes | List of control plane nodes, should be \<fqdn\>:8090
-| worker_nodes | Yes | List of control plane nodes, should be \<fqdn\>:8090
-| all_nodes | Yes | List of all kubernetes nodes in the cluster, should be \<fqdn\>
-| add_control_nodes | | List of control plane nodes to add to existing cluster, should be \<fqdn\>:8090
-| add_worker_nodes | | List of worker nodes to add to existing cluster, should be \<fqdn\>:8090
-| add_nodes | | List of all nodes added to existing cluster, should be \<fqdn\>
 
-
-## Optional: MetalLB Loadbalancer
-You must provide a MetalLB configuration file in the playbooks files subdirectory, the file will be copied to the operator node and used with the MetalLB module configuration. An example configuration file is provided, adjust to your own IP address range settings.
+## MetalLB Load balancer module (optional)
+You must provide a MetalLB configuration file in the playbooks files subdirectory, the file will be copied to the on the operator node and used with the MetalLB module configuration. An example configuration file is provided, adjust to your own IP address range settings.
 
     $ cd <playbookdir>/files
     $ ls -l
@@ -86,17 +71,7 @@ You must provide a MetalLB configuration file in the playbooks files subdirector
       addresses:
       - 192.168.178.90-192.168.178.95
 
-## Optional: Oracle Cloud OCI Loadbalancer and Storage
-
-### OCI API Key
-For the OCI-CCM module you need to store the API key file in the playbooks files subdirectory:
-
-    $ cd <playbookdir>/files
-    $ ls -l
-    total 16
-    -rw------- 1 opc opc 1730 Aug 12 13:07 oci_api_key.pem
-
-### OCI-CCM variables
+## Oracle Cloud OCI-CCM module (optional)
 
 The playbook to deploy the [OCI Cloud Controller Manager (CCM)](https://github.com/oracle/oci-cloud-controller-manager) module includes your OCI cloud authentication and configuration settings. When you have added your authentication and OCI configuration information in the playbook, it is recommended to encrypt the file with an ansible vault password. The password wil be asked when you run the playbook in the CLI or in Oracle Linux Automation Manager. To encrypt the playbook:
 
@@ -117,6 +92,14 @@ The following variables are required in the `deploy-mod-ociccm.yml` playbook, co
 | oci_vcn | Yes | Example: ocid1.vcn.oc1.uk-london-1.amaaaaaa..........j5jw3iag
 | lb_subnet1 | Yes | Example: ocid1.subnet.oc1.uk-london-1.aaaaaaaa..........w3a75jhf
 
+### OCI API Key 
+For the OCI-CCM module you need to store the API key file in the playbooks files subdirectory:
+
+    $ cd <playbookdir>/files
+    $ ls -l
+    total 16
+    -rw------- 1 opc opc 1730 Aug 12 13:07 oci_api_key.pem
+
 # How to use
 
 The playbooks are tested with kubernetes nodes for on-premise infrastructure as well as OCI instances in Oracle cloud. They both work from the command line by running the `ansible-playbook` command or when they are imported in Oracle Linux Automation Manager (OLAM). Example command line:
@@ -124,4 +107,4 @@ The playbooks are tested with kubernetes nodes for on-premise infrastructure as 
     $ ansible-playbook -i inventories/hosts.ini ./deploy-ocne.yml
     $ ansible-playbook -i inventories/hosts.ini ./deploy-mod-ociccm.yml
 
-If you setup the inventory file `<playbook-dir>/inventories/hosts.ini` and the `<playbook-dir>/group_vars/all.yml` files before importing as project in OLAM they can be used as imported _SOURCE_ in the OLAM inventory configuration.
+If you stored the playbooks as project in Oracle Linux Automation Manager (OLAM) then best thing to do is to create an inventory in the OLAM UI, add hosts and groups as described above and add the required variables to the Variables section in the inventory.
