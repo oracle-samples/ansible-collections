@@ -25,7 +25,7 @@ request, please [review our contribution guide](./CONTRIBUTING.md).
 ## Help
 
 - Project Owner: Simon Coter ([@scoter-oracle](https://github.com/scoter-oracle))
-- Project Admin: Simon Hayler ([@simonhayler](https://github.com/simonhayler))
+- Project Admin: Monica S ([@Monicashivakumar](https://github.com/Monicashivakumar))
 
 ## Security
 
