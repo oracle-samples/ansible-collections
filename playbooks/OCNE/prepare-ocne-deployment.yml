@@ -1,0 +1,109 @@
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Description: Ansible playbook to setup the OCNE Operator node.
+#
+# yamllint disable
+
+---
+
+
+- name: Create SSH keys as pre-requisite for olcne quick provisioning
+  hosts: localhost
+
+  tasks:
+  - name: Generate SSH key-pair
+    shell: >
+      ssh-keygen -q -t rsa -C "olcnectl" -f "{{ playbook_dir }}/files/k8s-key" -N ""
+      creates="{{ playbook_dir }}/files/k8s-key"
+
+- name: Manage SSH private key on operator
+  hosts: ocne_op
+
+  tasks:
+  - name: Copy Private Key to operator node
+    copy:
+      src: "{{ playbook_dir }}/files/k8s-key"
+      dest: "~/.ssh/k8s-key"
+      mode: 0600
+
+  - name: Enable Strict Host Key Checking
+    copy:
+      dest: "~/.ssh/config"
+      mode: 0644
+      content: |
+        Host *
+           StrictHostKeyChecking no
+           UserKnownHostsFile=/dev/null
+
+- name: Manage SSH public key on OCNE nodes
+  hosts: ocne_op ocne_kube_control ocne_kube_worker 
+  gather_facts: true
+
+  tasks:
+  - name: Add to authorized keys on OCNE node
+    ansible.posix.authorized_key:
+      user: "{{ ansible_user }}"
+      state: present
+      key: "{{ lookup('file', '{{ playbook_dir }}/files/k8s-key.pub') }}"
+
+- name: Prepare correct configuration to access repositories
+  hosts: ocne_op ocne_kube_control ocne_kube_worker 
+  become: yes
+  become_method: sudo
+
+  tasks:
+
+  - name: Add proxy config to dnf.conf
+    lineinfile:
+      path: /etc/dnf/dnf.conf
+      line: "proxy={{ my_https_proxy }}"
+      state: present
+    when:
+    - use_proxy == true
+
+  - name: Workaround for ol8_developer channels not available bug
+    dnf:
+      name: oraclelinux-developer-release-el8
+      state: latest
+    ignore_errors: yes
+
+- name: Install OCNE on Operator Node
+  hosts: ocne_op
+  become: yes
+  become_method: sudo
+
+  tasks:
+
+  - name: Install oracle-olcne-release-el8 RPM
+    dnf:
+      name: oracle-olcne-release-el8
+      state: latest
+    ignore_errors: yes
+
+  - name: Enable the OL8 repos
+    shell: |
+           dnf config-manager --enable ol8_olcne15 ol8_addons ol8_baseos_latest ol8_appstream ol8_kvm_appstream ol8_UEKR6
+
+  - name: Disable OL8 older olcne repos
+    shell: |
+           dnf config-manager --disable ol8_olcne14 ol8_olcne13 ol8_olcne12
+    ignore_errors: yes
+
+  - name: Disable OL8 development repos
+    shell: |
+           dnf config-manager --disable ol8_developer
+    ignore_errors: yes
+
+  - name: Install olcnectl RPM
+    dnf:
+      name: olcnectl
+      state: latest
+    ignore_errors: yes
+

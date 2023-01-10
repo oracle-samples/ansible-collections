@@ -40,22 +40,6 @@
       enabled: yes
 
 
-- name: Distribute OCI API key to control planes
-  hosts: ocne_kube_control ocne_new_kube_control
-  gather_facts: true
-
-  tasks:
-
-  - name: Creates directory to store OCI API key
-    file:
-      path: "{{ ansible_env.HOME }}/.oci"
-      state: directory
-
-  - name: Copy the Oracle Cloud Infrastructure API signing key
-    copy:
-      src: "{{ playbook_dir }}/files/oci_api_key.pem"
-      dest: "{{ ansible_env.HOME }}/.oci/oci_api_key.pem"
-
 - name: Create and Deploy an OCI-CCM Module
   hosts: ocne_op
   gather_facts: false
@@ -66,10 +50,17 @@
     oci_compartment: ocid1.compartment.oc1..aaaaaaaa..........bmn3j6qh
     oci_user: ocid1.user.oc1..aaaaaaaa..........wp432ssg
     oci_fingerprint: 4e:69:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:cc
+    oci_private_key: /tmp/oci_api_key.pem
     oci_vcn: ocid1.vcn.oc1.uk-london-1.amaaaaaa..........j5jw3iag
     oci_lb_subnet1: ocid1.subnet.oc1.uk-london-1.aaaaaaaa..........w3a75jhf
 
   tasks:
+
+  - name: Copy the Oracle Cloud Infrastructure API signing key
+    copy:
+      src: "{{ playbook_dir }}/files/oci_api_key.pem"
+      dest: "{{oci_private_key}}"
+      mode: 0600
 
   - name: Create an Oracle OCI-CCM Module
     command: olcnectl module create \
@@ -84,7 +75,7 @@
         --oci-vcn {{ oci_vcn }} \
         --oci-lb-subnet1 {{ oci_lb_subnet1 }} \
         --oci-compartment {{ oci_compartment }} \
-        --oci-private-key {{ ansible_env.HOME }}/.oci/oci_api_key.pem
+        --oci-private-key {{ oci_private_key }} 
 
   - name: Validate the Oracle OCI-CCM Module
     command: olcnectl module validate \

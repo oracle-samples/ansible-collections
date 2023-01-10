@@ -16,7 +16,7 @@
 
 - name: Remove OCNE modules, Kubernetes and OCNE environment
   hosts: ocne_op
-  gather_facts: false
+  gather_facts: true
 
   tasks:
 
@@ -60,3 +60,15 @@
     command: olcnectl environment delete
              --environment-name {{ ocne_environment }}
     ignore_errors: yes
+
+- name: Clean up and remove files on operator
+  hosts: all
+  gather_facts: false
+
+  tasks:
+
+  - name: Remove ~/.kube directory
+    file:
+      path: ~/.kube
+      state: absent
+

@@ -7,62 +7,65 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Description:
+# Description: Ansible playbook to setup the OCNE Operator node.
 #
-# This is the Playbook file to install OCNE rpms and the deployment of OCNE
-#   - edit the hosts.ini file to configure the nodes for the cluster
-#   - edit the group_vars/all.yml to configure variables for your environment
+# yamllint disable
+
 ---
 
-- name: Import Pre requisites playbook
-  ansible.builtin.import_playbook: play-prerequisites.yml
+- name: Prepare OCNE deployment when required (mostly first run only)
+  ansible.builtin.import_playbook: prepare-ocne-deployment.yml
   vars:
-    hostlist: "ocne_op ocne_kube_control ocne_kube_worker"
-
-- name: Import Operator playbook
-  ansible.builtin.import_playbook: play-operator.yml
-
-- name: Import Kube playbook
-  ansible.builtin.import_playbook: play-k8snodes.yml
-  vars:
-    hostlist: "ocne_kube_control ocne_kube_worker"
-
-- name: Import Nginx playbook
-  ansible.builtin.import_playbook: play-nginxmlb.yml
-  vars:
-    hostlist: "ocne_kube_control"
+    do_prep: "{{ do_preparation | default('false') }}"
   when:
-  - ha == true
+  - do_prep == true
 
-- name: Import Certificates setup playbook
-  ansible.builtin.import_playbook: play-certs-setup.yml
-
-- name: Import Certificates Restripc IPS playbook
-  ansible.builtin.import_playbook: play-certs-setup-rips.yml
-
-- name: Import API Server Start playbook
-  ansible.builtin.import_playbook: play-api-server-start.yml
-
-- name: Import Agent start playbook
-  ansible.builtin.import_playbook: play-agent-start.yml
+- name: Provision OCNE cluster
+  hosts: ocne_op
+  gather_facts: true
   vars:
-    hostlist: "ocne_kube_control ocne_kube_worker"
+   - operator_str: "{{ansible_fqdn}}:8091"
+   - proxy: "{{ use_proxy | default('false') }}"
 
-- import_playbook: play-kube-reset.yml
+  tasks:
 
-# Create an environment
-- import_playbook: play-env-create.yml
+  - name: Copy OCNE environment file to operator node when used
+    ansible.builtin.copy:
+      src: "{{ playbook_dir }}/files/{{ env_file }}"
+      dest: "~/{{ env_file }}"
 
-# Create Kubernetes module with self-signed Certificates and Load Balancer
-- import_playbook: play-mod-kube-create.yml
+  - name: Quick install with environment file
+    command: olcnectl provision --ssh-identity-file ~/.ssh/k8s-key --yes --timeout 20 \
+           --ssh-login-name "{{ ansible_user }}" \
+           --config-file {{ env_file }}
+    when:
+      - proxy == false
 
-- name: Import module Helm playbook
-  ansible.builtin.import_playbook: play-mod-helm-create.yml
-  when:
-  - ocne_helm != ""
+  - name: Quick install with environment file and proxy enabled
+    command: olcnectl provision --ssh-identity-file ~/.ssh/k8s-key --yes --timeout 20 \
+           --ssh-login-name "{{ ansible_user }}" \
+           --http-proxy  "{{ my_http_proxy }}" \
+           --https-proxy "{{ my_https_proxy }}" \
+           --no-proxy "{{ my_no_proxy }}" \
+           --config-file {{ env_file }}
+    when:
+      - proxy == true
 
-# Set up kubectl on master nodes
-- name: Import Kubectl setup playbook
-  ansible.builtin.import_playbook: play-kubectl.yml
-  vars:
-    hostlist: ocne_kube_control
+  - name: Update global flag configuration for environment 
+    command: olcnectl module instances \ 
+           --api-server {{ operator_str }} \ 
+           --environment-name {{ ocne_environment }} \ 
+           --update-config
+
+- name: Set up kubectl on the Master Node
+  hosts: ocne_kube_control
+  gather_facts: false
+
+  tasks:
+  - name: Set up kubectl
+    shell: |
+            rm $HOME/.kube/config
+            mkdir -p $HOME/.kube
+            sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+            sudo chown $(id -u):$(id -g) $HOME/.kube/config
+            echo 'export KUBECONFIG=$HOME/.kube/config' >> $HOME/.bashrc
