@@ -13,13 +13,6 @@
 
 ---
 
-- name: Prepare OCNE deployment when required (mostly first run only)
-  ansible.builtin.import_playbook: prepare-ocne-deployment.yml
-  vars:
-    do_prep: "{{ do_preparation | default('false') }}"
-  when:
-  - do_prep == true
-
 - name: Provision OCNE cluster
   hosts: ocne_op
   gather_facts: true
