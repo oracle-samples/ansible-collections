@@ -3,8 +3,8 @@
 The Oracle Cloud Native Environment playbooks support servers on Oracle Linux 8 with the latest version of Oracle Cloud Native Environment (OCNE). The playbooks only supports the quick install procedure with an configuration file.
 
 These are the playbooks to run in Ansible:
-
-* deploy-ocne.yml - deploys initial OCNE environment including the Kubernetes and Helm modules
+* prepare-ocne-deployment.yml - prepares the operator node to fulfill prequisites before running the quick install using configuration file
+* provision-ocne.yml - provision/deploys initial OCNE environment with quick install using configuration file, run this playbook after prepare-ocne-deployment.yml or reset-ocne.yml
 * deploy-mod-metallb.yml - Deploys MetalLB loadbalancer
 * deploy-mod-ociccm.yml - Deploys the OCI-CCM module when running in Oracle OCI used for OCI loadbalancer and storage
 * deploy-mod-istio.yml - deploys Istio service mesh
@@ -47,9 +47,8 @@ The variables for the OCNE cluster are defined in the `<playbookdir>/group_vars/
 | my_https_proxy | | Proxy details, leave empty if not using proxy
 | my_http_proxy | | Proxy details, leave empty if not using proxy
 | my_no_proxy | | Proxy details, leave empty if not using proxy
-| do_preparation | Yes | Set do_preparation to _true_ for the first deployment, it configures SSH keys, certificates and repositories. After a reset_ocne playbook run it should be set to _false_ to skip the basic plumbing
 | container_registry | Yes | Container registry path to get the OCNE component container images
-| virtual_ip | | The virtual IP address for an olcne-nginx with internal load balancer
+| env_file | Yes | Name of OCNE configuration file
 | ocne_environment | Yes | Set name for the OCNE environment
 | ocne_k8s | Yes | Set name of the OCNE Kubernetes module
 | ocne_helm | Yes | Set name of the OCNE Helm module, installed by default but only used when other modules are configured 
@@ -104,7 +103,8 @@ For the OCI-CCM module you need to store the API key file in the playbooks files
 
 The playbooks are tested with kubernetes nodes for on-premise infrastructure as well as OCI instances in Oracle cloud. They both work from the command line by running the `ansible-playbook` command or when they are imported in Oracle Linux Automation Manager (OLAM). Example command line:
 
-    $ ansible-playbook -i inventories/hosts.ini ./deploy-ocne.yml
+    $ ansible-playbook -i inventories/hosts.ini ./prepare-ocne-deployment.yml
+    $ ansible-playbook -i inventories/hosts.ini ./provision-ocne.yml
     $ ansible-playbook -i inventories/hosts.ini ./deploy-mod-ociccm.yml
 
 If you stored the playbooks as project in Oracle Linux Automation Manager (OLAM) then best thing to do is to create an inventory in the OLAM UI, add hosts and groups as described above and add the required variables to the Variables section in the inventory.
