@@ -1,0 +1,59 @@
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2023 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# Description: Playbook to scan for Common Vulnerabilities and Exposures (CVE) 
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+
+---
+- name: Uptrack Check
+  hosts: all
+  vars_prompt:
+     - name: "save_output"
+       prompt: "Do you want to save the output? (yes/no)"
+       private: no
+
+  tasks:
+    - name: Scanning for vulnerabilities.
+      shell:
+        cmd: "(uname -s; uname -m; uname -r; uname -v) | \
+             curl https://api-ksplice.oracle.com/api/1/update-list/ \
+             -L -H 'Accept: text/text' --data-binary @- "
+      register: command_output
+      when: save_output == "no"
+
+    - name: Listing the Vulnerabilities
+      debug:
+        msg: "{{ command_output.stdout_lines }}"
+      when: save_output == "no"
+
+    - name: Scanning for vulnerabilities. The report will be available at /tmp/uptrack-check.html on the remote systems
+      shell: 
+        cmd: "(uname -s; uname -m; uname -r; uname -v) | \
+             curl https://api-ksplice.oracle.com/api/1/update-list/ \
+             -L -H 'Accept: text/text' --data-binary @- > /tmp/uptrack-check.txt"
+      register: command_output
+      when: save_output == "yes"
+
+
+    - name: Formatting the file
+      replace:
+        path: /tmp/uptrack-check.txt
+        regexp: 'CVE-(\d+)-(\d+)'
+        replace: '<br><a href="https://linux.oracle.com/cve/CVE-\1-\2.html">CVE-\1-\2</a>'
+        backup: yes
+      when: save_output == "yes"
+     
+
+    - name: Save to HTML file
+      command: mv /tmp/uptrack-check.txt /tmp/uptrack-check.html
+      when: save_output == "yes"
+  
+    - name: Deleting txt file
+      command: find /tmp -name 'uptrack-check.txt*' -delete
+
