@@ -5,6 +5,12 @@ A collection of playbooks to install Ksplice zero downtime patching on Oracle Li
 
 Ksplice is available in online or offline deployment scenarios for kernel patching and/or userland patching. Ksplice Uptrack is the kernel patching client, while Ksplice Enhanced is the kernel and userland patching client.
 
+# Ksplice Uptrack check
+
+Playbook: `ksplice-uptrack-check.yml`
+
+Ksplice Uptrack check is a playbook to scan for Common Vulnerabilities and Exposures (CVE). By using the option `save_ouput == "yes"` in  the Job template, the playbook saves the output in HTML format in the `/tmp` directory of the target server. If you run the playbook with the CLI, the “-e” or “–extra-vars” command line parameter for ansible-playbook should be used.
+
 # Ksplice Uptrack offline client
 
 Playbook: `ksplice-uptrack-offline.yml`

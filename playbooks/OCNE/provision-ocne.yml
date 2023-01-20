@@ -22,15 +22,15 @@
 
   tasks:
 
-  - name: Copy OCNE environment file to operator node when used
-    ansible.builtin.copy:
-      src: "{{ playbook_dir }}/files/{{ env_file }}"
+  - name: Download OCNE environment file to operator node 
+    ansible.builtin.get_url:
+      url: "{{ env_file_url }}"
       dest: "~/{{ env_file }}"
 
   - name: Quick install with environment file
     command: olcnectl provision --ssh-identity-file ~/.ssh/k8s-key --yes --timeout 20 \
            --ssh-login-name "{{ ansible_user }}" \
-           --config-file {{ env_file }}
+           --config-file "~/{{ env_file }}"
     when:
       - proxy == false
 
@@ -40,7 +40,7 @@
            --http-proxy  "{{ my_http_proxy }}" \
            --https-proxy "{{ my_https_proxy }}" \
            --no-proxy "{{ my_no_proxy }}" \
-           --config-file {{ env_file }}
+           --config-file "~/{{ env_file }}"
     when:
       - proxy == true
 

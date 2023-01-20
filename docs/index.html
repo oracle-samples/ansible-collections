@@ -346,16 +346,11 @@
                         exist within a Project on the Oracle Linux Automation Manager either in a GIT repository or stored locally. 
                         Make sure the following configuration steps are done before running the playbooks.
                         </p>
-                        <h4>SSH keys</h4>
-                        <p>You need to generate ssh-keys for self-signed certificate distribution over the kubernetes nodes 
-                        during the installation process. Store the keys in the <i>&lt;playbookdir&gt;/files</i> directory, 
-                        for example:
-                        </p>
-                        <pre>      $ cd &lt;playbookdir&gt;/files
-      $ ssh-keygen -t rsa -f id_rsa -N '' -q
-      $ ls -l
-      -rw------- 1 opc opc 2610 Aug  8 11:22 id_rsa
-      -rw-r--r-- 1 opc opc  574 Aug  8 11:22 id_rsa.pub
+                        <h4>Quick install configuration file</h4>
+                        The playbooks use the Quick Install using Configuration File installation scenario.
+                        An OCNE configuration file includes all information about the environments and modules you want to create.
+                        This file in combination with the quick install procedure of OCNE saves repeated steps in the installation process. 
+                        For more information read the <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/tree/main/playbooks/OCNE">OCNE README file</a>
                         </pre>
                         <h4>Inventory and Variables</h4>
                         <p>
@@ -387,21 +382,16 @@
                         <h3>Running Playbooks</h3>
                         <p>There are several playbooks to be used in the deployment of OCNE, the overview of the deployment-playbooks
                         is available in the <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/tree/main/playbooks/OCNE">OCNE folder README file</a>.
-                        The main playbook (deploy-ocne.yml) installs the initial cluster with the Kubernetes and Helm module included, 
+                        Create a Job Workflow to install an entire cluster based on the provided playbooks (eg a workflow with prepare-ocne-deployment.yml, provision-ocne.yml), 
                         optionally there are playbooks for other modules such as the OCI-CCM module to setup a Oracle Cloud OCI 
                         load balancer. Multiple deployment-playbooks may be configured in a workflow.
                         </p>
                         <p>
-                        In below screenshots a Template is created for the main playbook (deploy-ocne.yml). When launched with 
-                        the earlier created OCNE inventory it will install a complete kubernetes cluster on the selected hosts in 
-                        the Inventory.
+                        In below screenshot a Workflow Template is created for the sample game application. When launched with 
+                        the earlier created OCNE inventory it will install a complete kubernetes cluster on the selected hosts in the Inventory.
                         </p>
                         <figure><img src="files/ocne05.png" alt="Create Template for initial OCNE deployment" style="width: 587px;" />
                             <figcaption>Step 1: create Template for initial OCNE deployment</figcaption>
-                        </figure>
-
-                        <figure><img src="files/ocne06.png" alt="Launch the Template and select the earlier created OCNE inventory" style="width: 587px;" />
-                            <figcaption>Step 2: launch the Template and select the earlier created OCNE inventory</figcaption>
                         </figure>
 
 
