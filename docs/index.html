@@ -346,11 +346,16 @@
                         exist within a Project on the Oracle Linux Automation Manager either in a GIT repository or stored locally. 
                         Make sure the following configuration steps are done before running the playbooks.
                         </p>
-                        <h4>Quick install configuration file</h4>
-                        The playbooks use the Quick Install using Configuration File installation scenario.
-                        An OCNE configuration file includes all information about the environments and modules you want to create.
-                        This file in combination with the quick install procedure of OCNE saves repeated steps in the installation process. 
-                        For more information read the <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/tree/main/playbooks/OCNE">OCNE README file</a>
+                        <h4>SSH keys</h4>
+                        <p>You need to generate ssh-keys for self-signed certificate distribution over the kubernetes nodes 
+                        during the installation process. Store the keys in the <i>&lt;playbookdir&gt;/files</i> directory, 
+                        for example:
+                        </p>
+                        <pre>      $ cd &lt;playbookdir&gt;/files
+      $ ssh-keygen -t rsa -f id_rsa -N '' -q
+      $ ls -l
+      -rw------- 1 opc opc 2610 Aug  8 11:22 id_rsa
+      -rw-r--r-- 1 opc opc  574 Aug  8 11:22 id_rsa.pub
                         </pre>
                         <h4>Inventory and Variables</h4>
                         <p>
@@ -382,16 +387,21 @@
                         <h3>Running Playbooks</h3>
                         <p>There are several playbooks to be used in the deployment of OCNE, the overview of the deployment-playbooks
                         is available in the <a target="_blank" href="https://github.com/oracle-samples/ansible-collections/tree/main/playbooks/OCNE">OCNE folder README file</a>.
-                        Create a Job Workflow to install an entire cluster based on the provided playbooks (eg a workflow with prepare-ocne-deployment.yml, provision-ocne.yml), 
+                        The main playbook (deploy-ocne.yml) installs the initial cluster with the Kubernetes and Helm module included, 
                         optionally there are playbooks for other modules such as the OCI-CCM module to setup a Oracle Cloud OCI 
                         load balancer. Multiple deployment-playbooks may be configured in a workflow.
                         </p>
                         <p>
-                        In below screenshot a Workflow Template is created for the sample game application. When launched with 
-                        the earlier created OCNE inventory it will install a complete kubernetes cluster on the selected hosts in the Inventory.
+                        In below screenshots a Template is created for the main playbook (deploy-ocne.yml). When launched with 
+                        the earlier created OCNE inventory it will install a complete kubernetes cluster on the selected hosts in 
+                        the Inventory.
                         </p>
                         <figure><img src="files/ocne05.png" alt="Create Template for initial OCNE deployment" style="width: 587px;" />
                             <figcaption>Step 1: create Template for initial OCNE deployment</figcaption>
+                        </figure>
+
+                        <figure><img src="files/ocne06.png" alt="Launch the Template and select the earlier created OCNE inventory" style="width: 587px;" />
+                            <figcaption>Step 2: launch the Template and select the earlier created OCNE inventory</figcaption>
                         </figure>
 
 
@@ -629,7 +639,23 @@
                          --results=path-to-results.xml --oval-results \
                          --report=path-to-report.html \
                          --check-engine-results path-to-xccdf-document
-                       </pre>                        
+                       </pre>    
+
+
+                      <h2><img src="https://docs.oracle.com/en/operating-systems/oracle-linux/obe-style-js//img/32_begin.png" alt="section 0" height="32" width="32" class="num_circ"/>Automating Vulnerabilities scan </h2>
+                      <h3> Overview </h3>
+                       <p>Performing regular CVE scans is an important part of maintaining the security of your systems and networks.                          
+			Organisations outsource the CVE scanning process to specialised firms or rely on third party tools that provide automated scanning services. However, similar list can be obtained using the ksplice-uptrack-check.yml playbook which is based on <a href="https://ksplice.oracle.com/inspector">Ksplice Inspector tool.</a><br>
+                       With the SCM Git project created, pointing to <a href = "https://github.com/oracle-samples/ansible-collections" > Oracle ansible-collection GitHub repository</a> and the template created pointing to <a href = "https://github.com/oracle-samples/ansible-collections/blob/main/playbooks/KSPLICE/ksplice-uptrack-check.yml"> ksplice-uptrack-check.yml</a> playbook, pass the extra variable as "save_output": "yes" if the output needs to be stored on remote systems or opt for "save_output": "no" in case you would like the output to be listed  on  Oracle Linux Automation Manager.<br> 
+                           <p>Here is how we set the extra variables while launching the template from Oracle Linux Automation Manager.                             <figure><image src= "files/Picture22.png"  alt="Extra Variables" style="width: 1000px; height: 600px;" /> </figure>
+                           <p>If the save_output is set to yes, html file containing the list of the CVEs would be stored in the location /tmp/uptrack-check.html, else the output will be listed in the Oracle Linux Automation Manager user interface as seen below.<br></p>
+                           
+                           <figure><image src= "files/Picture23.png"  alt="list" style="width: 1000px; height: 600px;" /> </figure>   
+                            <figure><image src= "files/Picture24.png"  alt="list" style="width: 1000px; height: 600px;" /> </figure> 
+                            <p>You can also schedule the playbook to be executed at your desired day/time using the Schedule option when creating a template.<br><p>
+                             <figure><image src= "files/Picture25.png"  alt="Extra Variables" style="width: 840px; height: 200px;" /> </figure>
+                            <p>As per the CVE list provided, please utilize Ksplice to implement the necessary patches. We have also compiled a playbook for automating the patching which are available under Ksplice section of Oracle ansible-collections GitHub repository.</p>
+                                                           
 
         <!-- need to add footer section at the end of the page-->  
     </pre>
