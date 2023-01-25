@@ -9,7 +9,7 @@ Ksplice is available in online or offline deployment scenarios for kernel patchi
 
 Playbook: `ksplice-uptrack-check.yml`
 
-Ksplice Uptrack check is a playbook to scan for Common Vulnerabilities and Exposures (CVE). By using the option `save_ouput == "yes"` in  the Job template, the playbook saves the output in HTML format in the `/tmp` directory of the target server. If you run the playbook with the CLI, the “-e” or “–extra-vars” command line parameter for ansible-playbook should be used.
+Ksplice Uptrack check is a playbook to scan for Common Vulnerabilities and Exposures (CVE). By using the option `save_output == "yes"` in  the Job template, the playbook saves the output in HTML format in the `/tmp` directory of the target server. If you run the playbook with the CLI, the “-e” or “–extra-vars” command line parameter for ansible-playbook should be used.
 
 # Ksplice Uptrack offline client
 
