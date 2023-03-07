@@ -1,0 +1,68 @@
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Description:
+# Inventory file for the deployment of an Oracle Linux Automation
+# Manager 2.0 clustered environment.
+#
+# Define groups and corresponding hostnames for the Oracle Linux
+# Automation Manager 2.0 cluster.
+#
+# control_nodes - list of control plane nodes
+# execution_nodes - list of execution and hop nodes
+# local_execution_group - list of local execution nodes, which is a subset of execution_nodes
+# hop - list of hop nodes, which is a subset of execution_nodes
+# remote_execution_group - list of remote execution nodes, which is a subset of execution_nodes
+# db_nodes - list of database nodes
+#
+# Create the peering within the cluster using the group_vars and the "peers" variable. The example
+# shows the local executions nodes as peers of the control plane nodes, indicating communication
+# flows from the control plane nodes to the local execution nodes.
+#
+# The "all" group_vars include the user and OpenSSH keypair used to connect to each node and the
+# specific python version used once connected.
+#
+[control_nodes]
+control-node01
+control-node02
+
+[control_nodes:vars]
+node_type=control
+peers=local_execution_group
+
+[execution_nodes]
+execution-node01
+execution-node02
+execution-remote-node01
+hop-node01
+
+[local_execution_group]
+execution-node01
+execution-node02
+
+[hop]
+hop-node01
+
+[hop:vars]
+peers=control_nodes
+
+[remote_execution_group]
+execution-remote-node01
+
+[remote_execution_group:vars]
+peers=hop
+
+[db_nodes]
+db-remote
+
+[all:vars]
+ansible_user=opc
+ansible_ssh_private_key_file=~/.ssh/id_rsa
+ansible_python_interpreter=/usr/bin/python3
+
