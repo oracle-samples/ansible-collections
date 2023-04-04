@@ -32,7 +32,7 @@ It configures the following seven nodes:
 
     ```
     git clone https://github.com/oracle-samples/ansible-collections.git ol-playbooks
-    cd ol-playbooks/OLAM/cluster-plus-hop-node
+    cd ol-playbooks/playbooks/OLAM/cluster-plus-hop-node
     cp group_vars/all.yml.example group_vars/all.yml
     cp inventory/hosts.ini.example inventory/hosts.ini
     ```
