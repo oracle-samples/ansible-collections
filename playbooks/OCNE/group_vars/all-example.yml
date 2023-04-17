@@ -11,6 +11,13 @@
 # Variables used in the Playbooks
 #
 
+# Version to install
+ocne_version: ocne16
+
+# Configure OCNE configuration file download url and name
+env_file_url: http://example.com/ocne-configfile.yml
+env_file: ocne-configfile.yml
+
 # Set use_proxy to 'true' if the environment is behind a proxy, else set to 
 # 'false' !!!
 # Required!!!
@@ -29,10 +36,6 @@ container_registry: container-registry-ams.oracle.com/olcne
 # virtual IP address.
 # !!!Required if multi-master (HA) with nginx!!!
 virtual_ip: 192.168.178.81
-
-# Configure OCNE configuration file download url and name
-env_file_url: http://example.com/ocne-configfile.yml
-env_file: ocne-configfile.yml
 
 # Set name for the OCNE environment !!!
 # !!!Required!!!

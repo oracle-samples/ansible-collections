@@ -1,16 +1,19 @@
 # OCNE - Oracle Cloud Native Environment Ansible Playbooks
 
-The Oracle Cloud Native Environment playbooks support servers on Oracle Linux 8 with the latest version of Oracle Cloud Native Environment (OCNE). The playbooks only supports the quick install procedure with an configuration file.
+The Oracle Cloud Native Environment playbooks support servers on Oracle Linux 8 with the latest version of Oracle Cloud Native Environment (OCNE). The playbooks only supports the quick install procedure with an configuration file and works with OCNE 1.5 and OCNE 1.6.
 
-These are the playbooks to run in Ansible:
+These are the main playbooks to run in Ansible to install, upscale or downscale a OCNE cluster:
 
-* prepare-ocne-deployment.yml - prepares the operator node to fulfill prequisites before running the quick install using configuration file
-* provision-ocne.yml - provision/deploys initial OCNE environment with quick install using configuration file, run this playbook after prepare-ocne-deployment.yml or reset-ocne.yml
+* ocne-quick-install.yml - Installs initial OCNE environment with quick install using configuration file
+* ocne-upscale-cluster.yml - Add additional nodes with quick install using configuration file
+* ocne-downscale-cluster.yml - Remove nodes using configuration file
+
+With following playbooks you can add modules to existing OCNE environment
+
 * deploy-mod-metallb.yml - Deploys MetalLB loadbalancer
 * deploy-mod-ociccm.yml - Deploys the OCI-CCM module when running in Oracle OCI used for OCI loadbalancer and storage
 * deploy-mod-istio.yml - deploys Istio service mesh
 * deploy-mod-olm.yml - deploys OCNE lifecycle manager for Operators
-* reset-ocne.yml - removes an OCNE environment including additional modules
 
 
 # Configuration
@@ -44,13 +47,14 @@ The variables for the OCNE cluster are defined in the `<playbookdir>/group_vars/
 
 | Variable | Required | Description |
 | -------- | -------- | ----------- |
+| ocne_version | Optional | Either _ocne15_ or _ocne16_, if not defined _ocne16_ is default
+| env_file_url | Yes | URL for the OCNE configuration file
+| env_file | Yes | Name of OCNE configuration file
 | use_proxy | Yes | Set use_proxy to _true_ if the environment is behind a proxy, else set to _false_
 | my_https_proxy | | Proxy details, leave empty if not using proxy
 | my_http_proxy | | Proxy details, leave empty if not using proxy
 | my_no_proxy | | Proxy details, leave empty if not using proxy
 | container_registry | Yes | Container registry path to get the OCNE component container images
-| env_file_url | Yes | URL for the OCNE configuration file
-| env_file | Yes | Name of OCNE configuration file
 | ocne_environment | Yes | Set name for the OCNE environment
 | ocne_k8s | Yes | Set name of the OCNE Kubernetes module
 | ocne_helm | Yes | Set name of the OCNE Helm module, installed by default but only used when other modules are configured 
