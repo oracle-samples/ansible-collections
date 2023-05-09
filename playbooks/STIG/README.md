@@ -8,7 +8,7 @@ RPM Package scap-security-guide provides the remediation playbooks for different
 - openscap.yml - Installs the openscap rpm. Runs the scan against the STIG profile and saves the report at /var/www/html/ssg-results.html
 - ol8-playbook-stig.yml - Applies the remediation for STIG profile to the specified set of hosts. 
 
-## Considersations
+## Considerations
 As part of the remediation activtity, there could be many modifications made to the target host. Hence, kindly review each task before proceeding.
 Here are the examples, to list a few:
 
