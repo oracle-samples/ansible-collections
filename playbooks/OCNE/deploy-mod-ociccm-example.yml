@@ -45,14 +45,14 @@
   gather_facts: false
 
   vars:
-    oci_region: uk-london-1
-    oci_tenancy: ocid1.tenancy.oc1..aaaaaaae..........cok7mlsa
-    oci_compartment: ocid1.compartment.oc1..aaaaaaaa..........bmn3j6qh
-    oci_user: ocid1.user.oc1..aaaaaaaa..........wp432ssg
-    oci_fingerprint: 4e:69:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:XX:cc
+    oci_region: "<enter oci region here>"
+    oci_tenancy: "<enter tenancy id here>"
+    oci_compartment: "<enter compartment id here>"
+    oci_user: "<enter oci_user id  here>"
+    oci_fingerprint: "<enter your fingerprint here>"
     oci_private_key: /tmp/oci_api_key.pem
-    oci_vcn: ocid1.vcn.oc1.uk-london-1.amaaaaaa..........j5jw3iag
-    oci_lb_subnet1: ocid1.subnet.oc1.uk-london-1.aaaaaaaa..........w3a75jhf
+    oci_vcn: "<enter oci vcn id for ocne servers here>"
+    oci_lb_subnet1: "<enter oci subnet for loadbalancer here>"
 
   tasks:
 
