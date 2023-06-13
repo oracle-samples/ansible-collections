@@ -15,7 +15,7 @@ This repository will contain example ansible playbook code.
 
 Clone this repository `git clone https://github.com/oracle-samples/ansible-collections.git`
 
-- [Check the getting started OLAM documentation](https://docs.oracle.com/en/operating-systems/oracle-linux/8/oracle-linux-automation-manager/).
+- [Check the getting started OLAM documentation](https://docs.oracle.com/en/operating-systems/oracle-linux-automation-manager/index.html).
 
 ## Contributing
 
