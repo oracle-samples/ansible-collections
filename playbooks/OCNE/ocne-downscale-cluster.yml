@@ -1,7 +1,7 @@
 #
 # Oracle Linux Automation Manager
 #
-# Copyright (c) 2022 Oracle and/or its affiliates.
+# Copyright (c) 2023 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # https://oss.oracle.com/licenses/upl.
 #
@@ -18,7 +18,6 @@
   gather_facts: true
   vars:
    - proxy: "{{ use_proxy | default('false') }}"
-   - ocne_v: "{{ ocne_version | default('ocne16') }}"
 
   tasks:
 
@@ -32,7 +31,6 @@
            --ssh-login-name "{{ ansible_user }}" \
            --config-file "~/downscale-{{ env_file }}"
     when:
-      - ocne_v == "ocne16"
       - proxy == false
 
   - name: Downscale with environment file and proxy enabled
@@ -43,5 +41,4 @@
            --no-proxy "{{ my_no_proxy }}" \
            --config-file "~/downscale-{{ env_file }}"
     when:
-      - ocne_v == "ocne16"
       - proxy == true

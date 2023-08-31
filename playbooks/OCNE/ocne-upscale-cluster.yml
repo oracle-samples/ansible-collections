@@ -1,7 +1,7 @@
 #
 # Oracle Linux Automation Manager
 #
-# Copyright (c) 2022 Oracle and/or its affiliates.
+# Copyright (c) 2023 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # https://oss.oracle.com/licenses/upl.
 #
@@ -58,7 +58,6 @@
   vars:
    - operator_str: "{{ansible_fqdn}}:8091"
    - proxy: "{{ use_proxy | default('false') }}"
-   - ocne_v: "{{ ocne_version | default('ocne16') }}"
 
   tasks:
 
@@ -73,7 +72,6 @@
            --config-file "~/upscale-{{ env_file }}"
     when:
       - proxy == false
-      - ocne_v == "ocne16"
 
   - name: Quick install with environment file and proxy enabled
     command: olcnectl provision --ssh-identity-file ~/.ssh/id_ocne_rsa --yes --timeout 20 \
@@ -84,4 +82,3 @@
            --config-file "~/upscale-{{ env_file }}"
     when:
       - proxy == true
-      - ocne_v == "ocne16"

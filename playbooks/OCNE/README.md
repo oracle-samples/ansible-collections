@@ -1,6 +1,6 @@
 # OCNE - Oracle Cloud Native Environment Ansible Playbooks
 
-The Oracle Cloud Native Environment playbooks support servers on Oracle Linux 8 with the latest version of Oracle Cloud Native Environment (OCNE). The playbooks only supports the quick install procedure with an configuration file and works with OCNE 1.5 and OCNE 1.6.
+The Oracle Cloud Native Environment playbooks support servers on Oracle Linux 8 with the latest version of Oracle Cloud Native Environment (OCNE). The playbooks only supports the quick install procedure with an configuration file and works with OCNE 1.6 and OCNE 1.7.
 
 These are the main playbooks to run in Ansible to install, upscale or downscale a OCNE cluster:
 
@@ -47,7 +47,7 @@ The variables for the OCNE cluster are defined in the `<playbookdir>/group_vars/
 
 | Variable | Required | Description |
 | -------- | -------- | ----------- |
-| ocne_version | Optional | Either _ocne15_ or _ocne16_, if not defined _ocne16_ is default
+| ocne_version | Optional | Either _ocne16_ or _ocne17_, if not defined _ocne17_ is default
 | env_file_url | Yes | URL for the OCNE configuration file
 | env_file | Yes | Name of OCNE configuration file
 | use_proxy | Yes | Set use_proxy to _true_ if the environment is behind a proxy, else set to _false_

@@ -1,7 +1,7 @@
 #
 # Oracle Linux Automation Manager
 #
-# Copyright (c) 2022 Oracle and/or its affiliates.
+# Copyright (c) 2023 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # https://oss.oracle.com/licenses/upl.
 #
@@ -12,7 +12,7 @@
 #
 
 # Version to install
-ocne_version: ocne16
+ocne_version: ocne17
 
 # Configure OCNE configuration file download url and name
 env_file_url: http://example.com/ocne-configfile.yml
