@@ -1,7 +1,7 @@
 #
 # Oracle Linux Automation Manager
 #
-# Copyright (c) 2022 Oracle and/or its affiliates.
+# Copyright (c) 2023 Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at
 # https://oss.oracle.com/licenses/upl.
 #
@@ -80,7 +80,7 @@
   become: yes
   become_method: sudo
   vars:
-   - ocne_v: "{{ ocne_version | default('ocne16') }}"
+   - ocne_v: "{{ ocne_version | default('ocne17') }}"
 
   tasks:
 
@@ -89,6 +89,19 @@
       name: oracle-olcne-release-el8
       state: latest
     ignore_errors: yes
+
+  - name: Enable the OL8 repos for OCNE 1.7
+    shell: |
+           dnf config-manager --enable ol8_olcne17 ol8_addons ol8_baseos_latest ol8_appstream ol8_kvm_appstream ol8_UEKR7
+    when:
+    - ocne_v == "ocne17"
+
+  - name: Disable OL8 older olcne repos for OCNE 1.7
+    shell: |
+           dnf config-manager --disable ol8_olcne16 ol8_olcne15 ol8_olcne13 ol8_olcne13 ol8_olcne12 ol8_developer
+    ignore_errors: yes
+    when:
+    - ocne_v == "ocne17"
 
   - name: Enable the OL8 repos for OCNE 1.6
     shell: |
@@ -102,19 +115,6 @@
     ignore_errors: yes
     when:
     - ocne_v == "ocne16"
-
-  - name: Enable the OL8 repos for OCNE 1.5
-    shell: |
-           dnf config-manager --enable ol8_olcne15 ol8_addons ol8_baseos_latest ol8_appstream ol8_kvm_appstream ol8_UEKR7
-    when:
-    - ocne_v == "ocne15"
-
-  - name: Disable OL8 older olcne repos for OCNE 1.5
-    shell: |
-           dnf config-manager --disable ol8_olcne14 ol8_olcne13 ol8_olcne12 ol8_developer
-    ignore_errors: yes
-    when:
-    - ocne_v == "ocne15"
 
   - name: Install olcnectl RPM
     dnf:
