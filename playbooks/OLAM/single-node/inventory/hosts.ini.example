@@ -1,0 +1,26 @@
+#
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2022 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Description:
+# Inventory file for the deployment of an Oracle Linux Automation
+# Manager 2.0 hybrid node environment (single node).
+#
+# control_node - node to run control, ececution and db
+#
+# The "all" group_vars include the user and OpenSSH keypair used to connect to each node and the
+# specific python version used once connected.
+#
+[control_node]
+my_olam_node
+
+[all:vars]
+ansible_user=opc
+ansible_ssh_private_key_file=~/.ssh/id_rsa
+ansible_python_interpreter=/usr/bin/python3
+
