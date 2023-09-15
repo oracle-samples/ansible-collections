@@ -54,6 +54,9 @@ It configures a single node with the following roles:
     # Enter the password for postgress awx user
 
     "olam_admin_password": admin
+
+    # NOTE: use these passwords for demo purposes only, use other ansible features to
+    # protect your passwords such as using ansible-vault to encrypt passwords.
     
     # Enter the name of a local ssh keypair located in the ~/.ssh directory. This key appends
     # to the non-opc user account's authorized_keys file.
