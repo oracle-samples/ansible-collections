@@ -15,7 +15,7 @@ This repository will contain example ansible playbook code.
 
 Clone this repository `git clone https://github.com/oracle-samples/ansible-collections.git`
 
-- [Check the getting started OLAM documentation](https://docs.oracle.com/en/operating-systems/oracle-linux/8/oracle-linux-automation-manager/).
+- [Check the getting started OLAM documentation](https://docs.oracle.com/en/operating-systems/oracle-linux-automation-manager/index.html).
 
 ## Contributing
 
@@ -34,5 +34,5 @@ vulnerability disclosure process.
 
 ## License
 
-Copyright (c) 2022 Oracle and/or its affiliates.
+Copyright (c) 2021, 2023 Oracle and/or its affiliates.
 Released under the Universal Permissive License v1.0 as shown at <https://oss.oracle.com/licenses/upl/>.
