@@ -1,0 +1,40 @@
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2023 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Description: Performs leapp upgrade and displays the Inhibitors.
+# Reboot timeout can be alterted
+
+
+---
+- name: Leapp Upgrade stage
+  hosts: all
+  become: yes
+  vars:    
+     leapp_switch: ""
+     
+
+  tasks:
+
+     - name: Remove_pam_pkcs11_module_check
+       ansible.builtin.command: sudo leapp answer --section remove_pam_pkcs11_module_check.confirm=True
+       
+     - name: Run leapp upgrade
+       ansible.builtin.shell: >
+         leapp upgrade {{ leapp_switch }}
+       register: leapp_result
+       failed_when: leapp_result.rc != 0
+       changed_when: false
+       ignore_errors: yes
+
+     - name: Reboot if Leapp upgrade was successful
+       ansible.builtin.reboot:
+         reboot_timeout: 5000  # You can adjust the timeout as needed
+       when: leapp_result.rc == 0
+
+     
+       

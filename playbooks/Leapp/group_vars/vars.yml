@@ -1,0 +1,9 @@
+# Variable  to specify if the proxy is being used.
+proxy: false
+
+#Proxy to be specified if the above variable proxy is set to true.
+my_https_proxy: ""
+
+# --oci for OCI Instances
+leapp_switch: --oraclelinux
+

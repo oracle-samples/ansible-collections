@@ -1,0 +1,180 @@
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2023 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Description: Ansible playbook to prepare the host for leapp upgrade.
+# Example : ansible-playbook leapp_prepare.yml -e '{"proxy":"yes","my_https_proxy":"http://proxy"}'
+
+
+---
+- name: Preparing the hosts for leapp Upgrade
+  hosts: all
+  become: yes  # Enable privilege escalation
+  vars:    
+     proxy: ""
+     my_https_proxy: ""
+  
+  tasks:
+
+    - name: Display current release
+      ansible.builtin.shell: |
+        cat /etc/*release
+        uname -r
+      register: system_info
+
+    - name: Print current release and kernel
+      ansible.builtin.debug:
+        var: system_info.stdout_lines
+
+    - name: Check if Oracle Linux
+      set_fact:
+        is_oraclelinux: "{{ 'Oracle Linux' in system_info.stdout }}"   
+
+    - name: Gather package facts
+      ansible.builtin.package_facts:
+
+    - name: Display message based on package presence
+      debug:
+        msg: "rhn-setup package is installed. Please ensure that the system is currently not registered with ULN"
+      when: "'rhn-setup' in ansible_facts.packages"
+
+    - name: Get the date of the last system update
+      shell: grep Updated /var/log/yum.log | tail -1 | cut -d' ' -f 1-2
+      register: last_update_date
+      changed_when: false
+
+    - name: Display last update date and days since last update
+      debug:
+        msg: "The system was last updated on {{ last_update_date.stdout }}"
+
+    - name: Get a list of recently updated packages
+      shell: rpm -qa --last | head -20
+      register: recent_updates
+      changed_when: false
+
+    - name: Display recently updated packages
+      debug:
+        msg: "Recently updated packages:\n{{ recent_updates.stdout }}"
+
+    - name: Add proxy config to yum.conf
+      lineinfile:
+        path: /etc/yum.conf
+        line: "proxy={{ my_https_proxy }}"
+        state: present
+      when:
+        - proxy == "true"
+          
+    - name: Install mokutil
+      become: yes
+      yum:
+        name: mokutil
+        state: present
+
+    - name: Install yum versionlock plugin
+      become: yes
+      yum:
+       name: yum-plugin-versionlock
+       state: present
+       
+    - name: Check Secure Boot status
+      command: mokutil --sb-state
+      register: secure_boot_output
+      changed_when: false
+      ignore_errors: true
+
+    - name: Disable Secure Boot if enabled
+      command: mokutil --disable-validation
+      when: "'enabled' in secure_boot_output.stdout"
+      changed_when: true
+
+    - name: Display status after attempting to disable Secure Boot
+      debug:
+        msg: "Secure Boot status: {{ 'disabled' if 'enabled' in secure_boot_output.stdout else 'already disabled' }}"
+
+    - name: Set locale using localectl
+      command: localectl set-locale LANG=en_US.UTF-8
+
+
+    - name: Clear version locks using yum
+      command: yum versionlock clear
+
+    - name: Get /var disk space usage
+      shell: df -h /var | awk 'NR==2{print $5}' | sed 's/%//'
+      register: var_space
+
+    - name: Displaying the usage of /var
+      debug:
+        msg: "/var disk space usage: {{ var_space.stdout }}%"
+      
+    - name: Send warning if /var space usage is over 90%
+      debug:
+        msg: "/var disk space usage is over 90% - Current usage: {{ var_space.stdout }}%"
+      when: var_space.stdout|int > 90
+
+    - name: Performing update
+      command: yum update -y
+
+    - name: Install Leapp
+      command: yum install -y leapp --enablerepo=ol7_leapp,ol7_latest
+
+    - name: Install Leapp
+      become: yes
+      yum:
+       name: leapp-upgrade
+       state: present
+
+    - name: Permit root login via ssh
+      block:
+        - name: Configure sshd
+          lineinfile:
+            path: /etc/ssh/sshd_config
+            regexp: '^PermitRootLogin'
+            line: PermitRootLogin yes
+          register: permit_root_login
+
+    - name: Install Cockpit packages
+      yum:
+        name:
+          - cockpit
+        state: present
+   
+    - name: Reboot system
+      reboot:
+         reboot_timeout: 300
+
+    - name: Start and enable Cockpit service
+      command: "systemctl enable --now cockpit"
+
+        
+    - name: Ensure the Cockpit port is open in the firewall
+      command: firewall-cmd --permanent --add-service=cockpit
+
+    - name: Reload Firewall Rules
+      command: firewall-cmd --reload
+
+     
+
+
+
+
+
+
+      
+
+        
+
+
+
+    
+
+        
+
+     
+
+        
+
+     
