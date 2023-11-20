@@ -1,0 +1,102 @@
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2023 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Description: Performs leapp upgrade and displays the Inhibitors.
+# If the environment is behind proxy, performs the remediation of KM Note 2820209.1
+
+
+---
+- name: Leapp Preupgrade stage
+  hosts: all
+  become: yes
+  vars:    
+     leapp_switch: ""
+     my_https_proxy: ""
+     
+
+  tasks:
+       
+     - name: Run leapp pre upgrade
+       ansible.builtin.shell: >
+          leapp preupgrade {{ leapp_switch }}
+       register: leapp_result
+       failed_when: leapp_result.rc != 0
+       changed_when: false
+       ignore_errors: yes
+
+     - name: Collect human readable report results
+       ansible.builtin.slurp:
+           src: /var/log/leapp/leapp-report.txt
+       register: results_txt
+
+     - name: Collect JSON report results
+       ansible.builtin.slurp:
+          src: /var/log/leapp/leapp-report.json
+       register: results_json
+
+     - name: Parse report results
+       ansible.builtin.set_fact:
+           leapp_report_txt: "{{ results_txt.content | b64decode | split('\n') }}"
+           leapp_report_json: "{{ results_json.content | b64decode | from_json }}"
+
+     - name: Check for inhibitors
+       ansible.builtin.set_fact:
+         upgrade_inhibited: true
+       when: "'inhibitor' in item.flags"
+       loop: "{{ leapp_report_json.entries }}"
+       
+     - name: Print lines 
+       ansible.builtin.shell: grep -i -A5 "Risk Factor" /var/log/leapp/leapp-report.txt
+       register: risk_factor_lines
+
+     - name: Display lines 
+       ansible.builtin.debug:
+          var: risk_factor_lines.stdout_lines
+
+     - name: Fetch files from remote host using fetch
+       ansible.builtin.fetch:
+         src: "/var/log/leapp/leapp-report.txt"
+         dest: "/tmp/test/"
+         flat: yes
+
+     - name: Answer file
+       ansible.builtin.command: mv /var/log/leapp/answerfile.userchoices /var/log/leapp/answerfile
+
+     - name: Display contents of answerfile
+       ansible.builtin.shell: cat /var/log/leapp/answerfile
+       register: answerfile_content
+
+     - name: Print answerfile content
+       ansible.builtin.debug:
+         var: answerfile_content.stdout_lines
+
+     - name: Check if proxy is present in /etc/yum.conf
+       command: grep -q '^proxy=' /etc/yum.conf
+       ignore_errors: yes
+       register: proxy_check
+
+     - name: Comment out proxy in /etc/yum.conf
+       replace:
+         path: /etc/yum.conf
+         regexp: '^(proxy=.*)$'
+         replace: '#\1'
+       when: proxy_check.rc == 0
+
+
+     - name: Modify leapp-upgrade-repos-ol8.repo
+       command: sudo sed -i '/^enabled=0.*/a proxy={{ my_https_proxy }}' /etc/yum.repos.d/leapp-upgrade-repos-ol8.repo
+       when: proxy_check.rc == 0
+
+
+     
+
+    
+       
+
+       
+      

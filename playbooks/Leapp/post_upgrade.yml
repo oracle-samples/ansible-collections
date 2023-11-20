@@ -1,0 +1,38 @@
+# Oracle Linux Automation Manager
+#
+# Copyright (c) 2023 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at
+# https://oss.oracle.com/licenses/upl.
+#
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Description: Removes residual Oracle Linux 7 packages
+# 
+
+
+- name: Post Upgrade
+  hosts: all
+  become: yes  # Enable privilege escalation
+
+  
+  tasks:
+
+    - name: Display current release
+      ansible.builtin.shell: |
+        cat /etc/*release
+        uname -r
+      register: system_info
+
+    - name: Print current release and kernel
+      ansible.builtin.debug:
+        var: system_info.stdout_lines
+
+    - name: Check for residual Oracle Linux 7 packages
+      shell: "rpm -qa | grep el7 "
+      register: ol7_packages
+      changed_when: false
+
+    - name: Remove residual Leapp packages
+      command: "dnf remove -y {{ item }}"
+      with_items: "{{ ol7_packages.stdout_lines }}"
+      when: ol7_packages.stdout_lines | length > 0
