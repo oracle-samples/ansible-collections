@@ -1,6 +1,6 @@
 # OCNE - Oracle Cloud Native Environment Ansible Playbooks
 
-The Oracle Cloud Native Environment playbooks support servers on Oracle Linux 8 with the latest version of Oracle Cloud Native Environment (OCNE). The playbooks only supports the quick install procedure with an configuration file and works with OCNE 1.6 and OCNE 1.7.
+The Oracle Cloud Native Environment playbooks support servers on Oracle Linux 8 with the latest version of Oracle Cloud Native Environment (OCNE). The playbooks only supports the quick install procedure with an configuration file and works with OCNE 1.7 and OCNE 1.8.
 
 These are the main playbooks to run in Ansible to install, upscale or downscale a OCNE cluster:
 
@@ -22,14 +22,14 @@ Make sure the following configuration steps are done before running the playbook
 
 ## OCNE Configuration file
 
-The playbooks use the [Quick Install using Configuration File](https://docs.oracle.com/en/operating-systems/olcne/1.5/quickinstall/task-provision-config.html) installation scenario.
+The playbooks use the [Quick Install using Configuration File](https://docs.oracle.com/en/operating-systems/olcne/1.8/quickinstall/task-provision-config.html) installation scenario.
 An OCNE configuration file includes all information about the environments and modules you want to create. 
 This file in combination with the quick install procedure of OCNE saves repeated steps in the 
 installation process. 
 
 The OCNE playbooks requires to have the OCNE configuration file downloaded from a specified download url (`env_file_url` variable) and the configuration file will be stored on the OCNE operator node in a specified file (`env_file` variable).
 
-Information on how to create a configuration file is explained in the [OCNE Platform CLI documentation](https://docs.oracle.com/en/operating-systems/olcne/1.5/olcnectl/config.html#write).
+Information on how to create a configuration file is explained in the [OCNE Platform CLI documentation](https://docs.oracle.com/en/operating-systems/olcne/1.8/olcnectl/config.html#write).
 
 ## Inventory file
 The Inventory file defines the hostnames and roles in the OCNE cluster. Example inventory files are provided in the `<playbookdir>/inventories` directory. The `hosts-example.ini` file provides configuration information to deploy the initial OCNE cluster. 
@@ -47,7 +47,7 @@ The variables for the OCNE cluster are defined in the `<playbookdir>/group_vars/
 
 | Variable | Required | Description |
 | -------- | -------- | ----------- |
-| ocne_version | Optional | Either _ocne16_ or _ocne17_, if not defined _ocne17_ is default
+| ocne_version | Optional | Either _ocne17_ or _ocne18_, if not defined _ocne18_ is default
 | env_file_url | Yes | URL for the OCNE configuration file
 | env_file | Yes | Name of OCNE configuration file
 | use_proxy | Yes | Set use_proxy to _true_ if the environment is behind a proxy, else set to _false_

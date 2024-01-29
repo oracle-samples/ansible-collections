@@ -12,7 +12,7 @@
 #
 
 # Version to install
-ocne_version: ocne17
+ocne_version: ocne18
 
 # Configure OCNE configuration file download url and name
 env_file_url: http://example.com/ocne-configfile.yml
